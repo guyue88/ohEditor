@@ -27,7 +27,9 @@ module.exports = {
 	},
 	plugins: [
 		new CleanWebpackPlugin(['dist']),
-		new HtmlWebpackPlugin()
+		new HtmlWebpackPlugin({
+			template: './src/editor.html'
+		})
 	],
 	output: {
 		filename: '[name].bundle.js',
