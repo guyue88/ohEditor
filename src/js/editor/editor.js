@@ -1,3 +1,4 @@
+import { Button } from './button';
 import { plugins as PLUGINS } from '../plugins/index';
 
 /*编辑器编号*/
@@ -19,13 +20,32 @@ class OhEditor{
 
 		this.id = ID;
 		ID++;
-		this.$editor = document.getElementById(element);
+
 		this._opts = Object.assign({}, _opts, opts);
+		this.$editor = document.getElementById(element);
+		this.$wrap = void 0;
+		this.$toolbar = void 0;
+		this.$container = void 0;
+		this.button = void 0;
 	}
 
 	create(){
 		this._initFrame();
 		this._initPlugins();
+		this.renderButton();
+	}
+
+	/**
+	 * 刷新，渲染按钮到控制栏
+	 * @return {[type]} [description]
+	 */
+	renderButton(){
+		if(!this._opts.toolbar || !this.button) return this;
+		this._opts.toolbar.forEach(name=>{
+			this.button.render(name);
+		});
+		
+		return this;
 	}
 
 	/**
@@ -78,6 +98,7 @@ class OhEditor{
 
 		this.$wrap.append($toolbar);
 		this.$toolbar = $toolbar;
+		this.button = new Button($toolbar);
 		return this;
 	}
 
@@ -104,6 +125,8 @@ class OhEditor{
 	_initPlugins(){
 		this.registerPlugin(PLUGINS);
 	}
+
+
 }
 
 export { OhEditor };

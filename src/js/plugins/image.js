@@ -1,33 +1,16 @@
-import { Menu } from '../menu/menu';
+import { Plugin } from './Plugin';
 
-class Image{
-	constructor(_editor_ins){
-		this._opts = {
-			menu: {
+class Image extends Plugin{
+	constructor(editor){
+		const _opts = {
+			button: {
 				title: '插入图片',
 				icon: 'photo',
-				name: 'insert-image' + _editor_ins.id
+				name: 'insertImage',
+				id: 'insert-image-' + editor.id
 			}
 		};
-		this._editor_ins = _editor_ins;
-		this._menu_ins = new Menu(_editor_ins.$toolbar);
-		this._init();
-	}
-
-	_init(){
-		this._initMenu();
-		this._initImageControl();
-	}
-
-	/**
-	 * 如果配置了 toolbar.insertImage ，则生成图片按钮
-	 * @return {[type]} [description]
-	 */
-	_initMenu(){
-		if(this._editor_ins._opts.toolbar.indexOf('insertImage') !== -1){
-			this._menu_ins.addMenu(this._opts.menu);
-			this._initCommand();
-		}
+		super(_opts, editor);
 	}
 
 	/**
@@ -43,7 +26,7 @@ class Image{
 	 * @return {[type]} [description]
 	 */
 	_initImageControl(){
-		
+
 	}
 }
 
