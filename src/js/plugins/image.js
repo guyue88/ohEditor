@@ -7,7 +7,8 @@ class Image extends Plugin{
 				title: '插入图片',
 				icon: 'photo',
 				name: 'insertImage',
-				id: 'insert-image-' + editor.id
+				id: 'insert-image-' + editor.id,
+				type: 'popup'
 			}
 		};
 		super(_opts, editor);

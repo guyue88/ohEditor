@@ -7,7 +7,8 @@ class FontSize extends Plugin{
 				title: '字体大小',
 				icon: 'text-height',
 				name: 'fontSize',
-				id: 'font-size-' + editor.id
+				id: 'font-size-' + editor.id,
+				type: 'drop'
 			}
 		};
 		super(_opts, editor);

@@ -7,7 +7,8 @@ class FontFamily extends Plugin{
 				title: '字体',
 				icon: 'font',
 				name: 'fontFamily',
-				id: 'font-family-' + editor.id
+				id: 'font-family-' + editor.id,
+				type: 'drop'
 			}
 		};
 		super(_opts, editor);

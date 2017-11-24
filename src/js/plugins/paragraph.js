@@ -7,7 +7,8 @@ class Paragraph extends Plugin{
 				title: '段落',
 				icon: 'header',
 				name: 'paragraph',
-				id: 'paragraph-' + editor.id
+				id: 'paragraph-' + editor.id,
+				type: 'drop'
 			}
 		};
 		super(_opts, editor);
