@@ -29,6 +29,10 @@ class OhEditor{
 		this.button = void 0;
 	}
 
+	/**
+	 * 创建编辑器
+	 * @return {[type]} [description]
+	 */
 	create(){
 		this._initFrame();
 		this._initPlugins();
