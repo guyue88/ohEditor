@@ -1,16 +1,23 @@
-import { Button } from './button';
-import { plugins as PLUGINS } from '../plugins/index';
+import {
+	Button
+} from './button';
+import {
+	Popup
+} from './popup';
+import {
+	plugins as PLUGINS
+} from '../plugins/index';
 
 /*编辑器编号*/
 let ID = 1;
 
-class OhEditor{
-	constructor(element, opts){
+class OhEditor {
+	constructor(element, opts) {
 		const _opts = {
 			toolbar: [
-				'paragraph', 'quote', 'fontFamily', 'fontSize', 'bold', 'italic', 'color', 
-				'underline','strikeThrough', '|', 'align', 'ol', 'ul', 'insertLink', 'unlink',
-				'insertImage', 'insertVideo', 'insertFile', 'insertTable', '|', 'insertHR', 
+				'paragraph', 'quote', 'fontFamily', 'fontSize', 'bold', 'italic', 'color',
+				'underline', 'strikeThrough', '|', 'align', 'ol', 'ul', 'insertLink', 'unlink',
+				'insertImage', 'insertVideo', 'insertFile', 'insertTable', '|', 'insertHR',
 				'clearFormatting', 'print', 'help', 'html', '|', 'undo', 'redo', 'fullscreen'
 			],
 			minHeight: '300px',
@@ -26,29 +33,50 @@ class OhEditor{
 		this.$wrap = void 0;
 		this.$toolbar = void 0;
 		this.$container = void 0;
+		// Button实例
 		this.button = void 0;
+		// Popup实例
+		this.popup = void 0;
 	}
 
 	/**
 	 * 创建编辑器
 	 * @return {[type]} [description]
 	 */
-	create(){
+	create() {
 		this._initFrame();
 		this._initPlugins();
-		this.renderButton();
+		this.refresh();
+		console.log(this);
 	}
 
+	refresh(){
+		this._renderButton();
+		this._renderPopup();
+	}
 	/**
 	 * 刷新，渲染按钮到控制栏
-	 * @return {[type]} [description]
+	 * @return {OhEditor} [description]
 	 */
-	renderButton(){
-		if(!this._opts.toolbar || !this.button) return this;
-		this._opts.toolbar.forEach(name=>{
+	_renderButton() {
+		if (!this._opts.toolbar || !this.button) return this;
+		this._opts.toolbar.forEach(name => {
 			this.button.render(name);
 		});
-		
+
+		return this;
+	}
+
+
+	/**
+	 * _renderPopup - 渲染弹层
+	 *
+	 * @return {OhEditor}  description	 
+	 */
+	_renderPopup(){
+		if (!this._opts.toolbar || !this.button) return this;
+		this.popup.render();
+
 		return this;
 	}
 
@@ -57,8 +85,8 @@ class OhEditor{
 	 * @param {function} [plugins] [一个或者多个插件]
 	 * @return {[OhEditor]} [OhEditor实例]
 	 */
-	registerPlugin(...plugins){
-		plugins.forEach(plugin=>{
+	registerPlugin(...plugins) {
+		plugins.forEach(plugin => {
 			plugin(this);
 		});
 		return this;
@@ -68,17 +96,18 @@ class OhEditor{
 	 * 初始化编辑器框架
 	 * @return {[OhEditor]} [OhEditor实例]
 	 */
-	_initFrame(){
+	_initFrame() {
 		this._createWrapDom();
 		this._createToolbarDom();
 		this._createContainerDom();
+		return this;
 	}
 
 	/**
 	 * 创建wrap
 	 * @return {[type]} [description]
 	 */
-	_createWrapDom(){
+	_createWrapDom() {
 		let $wrap = document.createElement('div');
 		$wrap.setAttribute('class', `oh-wrap`);
 		$wrap.setAttribute('id', `oh-editor${this.id}`);
@@ -92,8 +121,8 @@ class OhEditor{
 	 * 创建toolbar
 	 * @return {[type]} [description]
 	 */
-	_createToolbarDom(){
-		if(!this._opts.toolbar || !this._opts.toolbar.length){
+	_createToolbarDom() {
+		if (!this._opts.toolbar || !this._opts.toolbar.length) {
 			console.warn('没有定义 toolbar ，无法操作编辑器！');
 			return this;
 		}
@@ -103,6 +132,7 @@ class OhEditor{
 		this.$wrap.append($toolbar);
 		this.$toolbar = $toolbar;
 		this.button = new Button($toolbar);
+		this.popup = new Popup($toolbar);
 		return this;
 	}
 
@@ -110,27 +140,29 @@ class OhEditor{
 	 * 创建可视编辑区
 	 * @return {[type]} [description]
 	 */
-	_createContainerDom(){
+	_createContainerDom() {
 		let $container = document.createElement('div');
 
 		$container.setAttribute('class', 'oh-container');
 		$container.setAttribute('contenteditable', 'true');
 		$container.setAttribute('style', `width: ${this._opts.minWidth};height: ${this._opts.minHeight}`);
-		
+
 		this.$wrap.append($container);
 		this.$container = $container;
 		return this;
 	}
 
 	/**
-	 * 加载各种功能插件
+	 * 加载各种默认功能插件
 	 * @return {[OhEditor]} [OhEditor实例]
 	 */
-	_initPlugins(){
+	_initPlugins() {
 		this.registerPlugin(PLUGINS);
+		return this;
 	}
-
 
 }
 
-export { OhEditor };
+export {
+	OhEditor
+};
