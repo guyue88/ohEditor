@@ -7,7 +7,7 @@ export class Popup{
 	constructor($toolbar){
 		if(!$toolbar) throw new Error('未发现 toolbar 元素，无法添加弹层！');
 
-		this.$toolbar = $toolbar;
+		this.$toolbar = $($toolbar);
 		this.$wrap = this._insertWrap();
 		this.popupList = [];
 	}
@@ -31,27 +31,30 @@ export class Popup{
 	 * @return {Popup}      description
 	 */
 	_renderItem(opts){
-		let $div = document.createElement('div');
-		$div.setAttribute('id', `oh-popup-${opts.id}`);
-		$div.classList.add('oh-popup-layer');
-		$div.classList.add(`oh-popup-${opts.name}`);
+		let hasTab = false;
+		let $div = $(`<div id="oh-popup-${opts.id}" class="oh-popup-layer oh-popup-${opts.name}"></div>`);
 
 		if(opts.tabs && Array.isArray(opts.tabs)){
 			$div.append(this._renderTabs(opts.tabs));
 			$div.append(this._renderCont(opts.tabs));
-			this._toogleTab($div);
+			hasTab = true;
 		}else{
 			$div.append(this._renderCont(opts.template));
 		}
 
 		this.$wrap.append($div);
-		console.log( $(`#oh-btn-${opts.id}`, $(this.$toolbar)).css('display') );
-		let related = this.$toolbar.querySelector(`#oh-btn-${opts.id}`);
-		let left = related.offsetLeft + (related.offsetWidth / 2) - ($div.offsetWidth / 2) + 'px';
-		let top = related.offsetTop + (related.offsetHeight + 10) + 'px';
+		hasTab && this._toogleTab($div);
 
-		$div.style.left = left;
-		$div.style.top = top;
+		let related = this.$toolbar.find(`#oh-btn-${opts.id}`);
+		let relatedOffset = related.offset();
+		let offset = $div.offset();
+		let left = relatedOffset.left + (relatedOffset.width / 2) - (offset.width / 2) + 'px';
+		let top = relatedOffset.top + (relatedOffset.height + 10) + 'px';
+
+		$div.css({
+			left: left,
+			top: top
+		});
 	}
 
 	/**
@@ -61,21 +64,22 @@ export class Popup{
 	 * @return {HTMLElement}      description
 	 */
 	_renderTabs(tabs){
-		let $ul = document.createElement('ul');
-		$ul.classList.add('clearfix');
-		$ul.classList.add('oh-popup-tab');
+		let $ul = $('<ul class="clearfix oh-popup-tab"></ul>');
+
 		tabs.forEach((item, index)=>{
-			let $li = document.createElement('li');
+			let $li = $('<li></li>');
 			let $button = this._renderButton(item);
-			index === 0 && $li.classList.add('oh-active');
+			index === 0 && $li.addClass('oh-active');
 			$li.append($button);
 			$ul.append($li);
 		});
 		return $ul;
 	}
 
-	_toogleTab($wrap){
-		$wrap.add
+	_toogleTab($ele){
+		$ele.on('click', '.oh-popup-tab li', function(e){
+			console.log(this.index);
+		});
 	}
 
 	/**
@@ -85,20 +89,18 @@ export class Popup{
 	 * @return {HTMLElement}          description
 	 */
 	_renderCont(template){
-		let $div = document.createElement('div');
-		$div.classList.add('oh-popup-cont');
+		let $div = $('<div class="oh-popup-cont"></div>');
 
 		if(Array.isArray(template)){
 			template.forEach((item, index)=>{
-				let $child = document.createElement('div');
-				$child.classList.add('oh-popup-child');
-				$child.classList.add(`oh-popup-child-${item.name}`);
-				index === 0 && $child.classList.add('oh-active');
-				$child.innerHTML = item.template;
+				let $child = $(`<div class="oh-popup-child oh-popup-child-${item.name}"></div>`);
+
+				index === 0 && $child.addClass('oh-active');
+				$child.html(item.template);
 				$div.append($child);
 			});
 		}else{
-			$div.innerHTML = template;
+			$div.html(item.template);
 		}
 		return $div;
 	}
@@ -109,16 +111,13 @@ export class Popup{
 	 * @return {$button}  description
 	 */
 	_renderButton(bntOpts){
-		let $button = document.createElement('button');
-		let $icon = document.createElement('span');
+		let $button = $('<button type="button" class="oh-menu"></button>');
+		let $icon = $(`<span class="fa fa-${bntOpts.icon}"></span>`);
 
-		$button.setAttribute('type', 'button');
-		bntOpts.id && $button.setAttribute('id', `oh-${bntOpts.id}`);
-		$button.setAttribute('title', bntOpts.title);
-		$button.classList.add(`oh-menu`);
-		$button.dataset.for = bntOpts.name;
-		$icon.classList.add('fa');
-		$icon.classList.add(`fa-${bntOpts.icon}`);
+		bntOpts.id && $button.attr('id', `oh-${bntOpts.id}`);
+		bntOpts.title && $button.attr('title', bntOpts.title);
+
+		/*$button.dataset.for = bntOpts.name;*/
 
 		$button.append($icon);
 		return $button;
@@ -136,8 +135,7 @@ export class Popup{
 	}
 
 	_insertWrap(){
-		let $div = document.createElement('div');
-		$div.classList.add('oh-popup-wrap');
+		let $div = $('<div class="oh-popup-wrap"></div>');
 
 		this.$toolbar.append($div);
 		return $div;

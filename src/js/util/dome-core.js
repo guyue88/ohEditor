@@ -149,6 +149,72 @@ class DomElement {
 		return this;
 	}
 
+	on(type, selector, fn){
+		/*没有传selector， 则不用代理*/
+		if(!fn){
+			fn = selector;
+			selector = null;
+		}
+
+		/*可能有多个事件*/
+		let types = type.split(/\s+/);
+
+		Element.prototype.matches =
+			Element.prototype.matches ||
+			Element.prototype.matchesSelector ||
+			Element.prototype.mozMatchesSelector ||
+			Element.prototype.msMatchesSelector ||
+			Element.prototype.oMatchesSelector ||
+			Element.prototype.webkitMatchesSelector ||
+			function(s) {
+				var matches = (this.document || this.ownerDocument).querySelectorAll(s),
+					i = matches.length;
+				while (--i >= 0 && matches.item(i) !== this) {}
+				return i > -1;
+			};
+
+		return this.each(elem => {
+			types.forEach(type => {
+				if (!type) return;
+
+				/*记录事件*/
+				allEvent.push({
+					elem: elem,
+					type: type,
+					fn: fn
+				});
+
+				if (!selector) {
+					/*无代理*/
+					elem.addEventListener(type, fn);
+					return;
+				}
+
+				/*有代理*/
+				elem.addEventListener(type, e => {
+					let target = e.target;
+					const currentTarget = e.currentTarget;
+
+					/*遍历外层并且匹配*/
+					while (target !== currentTarget) {
+						/*判断是否匹配到我们所需要的元素上*/
+						if (target.matches(selector)) {
+							/*执行绑定的函数*/
+							fn.call(target, e);
+							break;
+						}
+						target = target.parentNode;
+					}
+
+				});
+			});
+		});
+	}
+
+	off(){
+
+	}
+
 	addClass(className) {
 		if (!className) return this;
 
@@ -286,7 +352,7 @@ class DomElement {
 	}
 
 	/*获取 html*/
-	html(value) {
+	html(val) {
 		if(!val){
 			const elem = this[0];
 			return elem.innerHTML;
@@ -306,6 +372,16 @@ class DomElement {
 			return this.each(elem => {
 				elem.value = val;
 			});
+		}
+	}
+
+	offset(){
+		const elem = this.get(0);
+		return {
+			left: elem.offsetLeft,
+			top: elem.offsetTop,
+			width: elem.offsetWidth,
+			height: elem.offsetHeight,
 		}
 	}
 }
