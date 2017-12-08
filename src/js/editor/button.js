@@ -65,7 +65,7 @@ class Button{
 			$button.classList.add('oh-drop');
 		}else if(bntOpts.type === 'popup'){
 			$button.classList.add('oh-popup');
-			$button.dataset.popupFor = `oh-oppup-${name}`;
+			$button.dataset.popup = `oh-popup-${bntOpts.id}`;
 		}
 
 		$button.append($icon);

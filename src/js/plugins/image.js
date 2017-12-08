@@ -2,7 +2,7 @@ import { Plugin } from './Plugin';
 
 class Image extends Plugin{
 	constructor(editor){
-		const id = 'insert-image';
+		const id = 'insert-image-' + editor.id;
 		const name = 'insertImage';
 		const _opts = {
 			button: {

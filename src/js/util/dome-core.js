@@ -49,7 +49,7 @@ function querySelectorAll(selector, scope) {
 	if (isDOMList(result)) {
 		return result;
 	} else {
-		return [result];
+		return Array.isArray(result) ? result : [result];
 	}
 }
 
@@ -200,13 +200,19 @@ class DomElement {
 				elem.addEventListener(type, e => {
 					let target = e.target;
 					const currentTarget = e.currentTarget;
-
 					/*遍历外层并且匹配*/
 					while (target !== currentTarget) {
 						/*判断是否匹配到我们所需要的元素上*/
 						if (target.matches(selector)) {
 							/*执行绑定的函数*/
-							fn.call(target, e);
+							let res = fn.call(target, e);
+
+							if(!res){
+								e.preventDefault;
+								e.returnValue = false;
+								e.stopPropagation();
+								e.cancelBubble = true;
+							}
 							break;
 						}
 						target = target.parentNode;
@@ -472,6 +478,25 @@ class DomElement {
 				elem.value = val;
 			});
 		}
+	}
+
+	data(key, val){
+		key = formatStyleName(key);
+		if(!val){
+			return this.get(0).dataset[key];
+		}else{
+			return this.each(elem=>{
+				elem.dataset[key] = val;
+			});
+		}
+	}
+
+	width(){
+		return parseFloat(this.eq(0).css('width'));
+	}
+
+	height(){
+		return parseFloat(this.eq(0).css('height'));
 	}
 
 	offset(){

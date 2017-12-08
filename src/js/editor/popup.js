@@ -31,37 +31,38 @@ export class Popup{
 	 * @return {Popup}      description
 	 */
 	_renderItem(opts){
-		let hasTab = false;
-		let $div = $(`<div id="oh-popup-${opts.id}" class="oh-popup-layer oh-popup-${opts.name}"></div>`);
+		let $div = $(`<div id="oh-popup-${opts.id}" class="oh-layer oh-popup-layer oh-popup-${opts.name}"></div>`);
 
 		if(opts.tabs && Array.isArray(opts.tabs)){
 			$div.append(this._renderTabs(opts.tabs));
 			$div.append(this._renderCont(opts.tabs));
-			hasTab = true;
+			this._toggleTab($div);
 		}else{
 			$div.append(this._renderCont(opts.template));
 		}
 
 		this.$wrap.append($div);
-		hasTab && this._toogleTab($div);
 
-		let related = this.$toolbar.find(`#oh-btn-${opts.id}`);
-		let relatedOffset = related.offset();
+		let $related = this.$toolbar.find(`#oh-btn-${opts.id}`);
+		let relatedOffset = $related.offset();
 		let offset = $div.offset();
 		let left = relatedOffset.left + (relatedOffset.width / 2) - (offset.width / 2) + 'px';
 		let top = relatedOffset.top + (relatedOffset.height + 10) + 'px';
 
 		$div.css({
 			left: left,
-			top: top
+			top: top,
+			display: "none",
+			visibility: "visible"
 		});
+		this._toggleLayer($related);
 	}
 
 	/**
 	 * _renderTabs - 弹层按钮
 	 *
 	 * @param  {type} tabs description
-	 * @return {HTMLElement}      description
+	 * @return {DomElement}      description
 	 */
 	_renderTabs(tabs){
 		let $ul = $('<ul class="clearfix oh-popup-tab"></ul>');
@@ -76,14 +77,33 @@ export class Popup{
 		return $ul;
 	}
 
-	_toogleTab($ele){
-		$ele.on('click', '.oh-popup-tab li', function(e){
+	/**
+	 * _toggleTab - 弹层内的tab切换
+	 *
+	 * @param  {DomElement} $layer description
+	 * @return {type}      description
+	 */
+	_toggleTab($layer){
+		$layer.on('click', '.oh-popup-tab li', function(e){
 			let me = $(this),
 				index = me.index(),
 				$pop = me.parents('.oh-popup-layer').find('.oh-popup-child');
 
 			me.addClass('oh-active').siblings().removeClass('oh-active');
 			$pop.eq(index).addClass('oh-active').siblings().removeClass('oh-active');
+			return false;
+		});
+	}
+
+	_toggleLayer($btn){
+		const self = this;
+		$btn.on('click', function(e){
+			e.stopPropagation();
+			var me = $(this),
+				$popup = self.$toolbar.find(`#${me.data('popup')}`);
+
+			$popup.show();
+			return false;
 		});
 	}
 

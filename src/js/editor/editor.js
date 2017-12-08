@@ -7,6 +7,7 @@ import {
 import {
 	plugins as PLUGINS
 } from '../plugins/index';
+import $ from '../util/dome-core';
 
 /*编辑器编号*/
 let ID = 1;
@@ -71,7 +72,7 @@ class OhEditor {
 	/**
 	 * _renderPopup - 渲染弹层
 	 *
-	 * @return {OhEditor}  description	 
+	 * @return {OhEditor}  description
 	 */
 	_renderPopup(){
 		if (!this._opts.toolbar || !this.button) return this;
@@ -162,6 +163,11 @@ class OhEditor {
 	}
 
 }
+
+$(document).on('click', function(){
+	console.log(1);
+	$('.oh-wrap .oh-layer').hide();
+});
 
 export {
 	OhEditor

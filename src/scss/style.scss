@@ -93,6 +93,7 @@
 	/*弹层*/
 	.oh-popup-wrap{
 		.oh-popup-layer{
+			visibility: hidden;
 			position: absolute;
 			font-family: Arial, Helvetica, sans-serif;
 			top: 0;
