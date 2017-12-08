@@ -78,7 +78,12 @@ export class Popup{
 
 	_toogleTab($ele){
 		$ele.on('click', '.oh-popup-tab li', function(e){
-			console.log(this.index);
+			let me = $(this),
+				index = me.index(),
+				$pop = me.parents('.oh-popup-layer').find('.oh-popup-child');
+
+			me.addClass('oh-active').siblings().removeClass('oh-active');
+			$pop.eq(index).addClass('oh-active').siblings().removeClass('oh-active');
 		});
 	}
 

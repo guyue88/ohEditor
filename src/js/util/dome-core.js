@@ -1,3 +1,17 @@
+Element.prototype.matches =
+	Element.prototype.matches ||
+	Element.prototype.matchesSelector ||
+	Element.prototype.mozMatchesSelector ||
+	Element.prototype.msMatchesSelector ||
+	Element.prototype.oMatchesSelector ||
+	Element.prototype.webkitMatchesSelector ||
+	function(s) {
+		var matches = (this.document || this.ownerDocument).querySelectorAll(s),
+			i = matches.length;
+		while (--i >= 0 && matches.item(i) !== this) {}
+		return i > -1;
+	};
+
 /*所有事件记录，便于解绑*/
 const allEvent = [];
 
@@ -43,7 +57,7 @@ function querySelectorAll(selector, scope) {
 function isDOMList(list) {
 	if (!list) return false;
 	if (list instanceof HTMLCollection || list instanceof NodeList
-		|| list[0].nodeType === 1 || list[0].nodeType === 9)  {
+		|| ( Array.isArray(list) && list.length && (list[0].nodeType === 1 || list[0].nodeType === 9)))  {
 		return true;
 	}
 	return false;
@@ -127,6 +141,7 @@ class DomElement {
 	}
 
 	get(index) {
+		if(index < 0) index = index + this.length;
 		return this[index];
 	}
 
@@ -135,7 +150,12 @@ class DomElement {
 	}
 
 	last() {
-		return this.get(this.length - 1);
+		return this.get(- 1);
+	}
+
+	eq(index){
+		if(index === undefined) return this;
+		return new DomElement(this.get(index));
 	}
 
 	attr(key, val) {
@@ -158,20 +178,6 @@ class DomElement {
 
 		/*可能有多个事件*/
 		let types = type.split(/\s+/);
-
-		Element.prototype.matches =
-			Element.prototype.matches ||
-			Element.prototype.matchesSelector ||
-			Element.prototype.mozMatchesSelector ||
-			Element.prototype.msMatchesSelector ||
-			Element.prototype.oMatchesSelector ||
-			Element.prototype.webkitMatchesSelector ||
-			function(s) {
-				var matches = (this.document || this.ownerDocument).querySelectorAll(s),
-					i = matches.length;
-				while (--i >= 0 && matches.item(i) !== this) {}
-				return i > -1;
-			};
 
 		return this.each(elem => {
 			types.forEach(type => {
@@ -215,6 +221,112 @@ class DomElement {
 
 	}
 
+	siblings( selector ) {
+		let result = [];
+		this.each(elem=>{
+			result = result.concat( sibling( ( elem.parentNode || {} ).firstChild, elem ) );
+		});
+
+		return new DomElement(result).filter(selector);
+	}
+
+	next( selector ) {
+		let result = [];
+		this.each(elem=>{
+			result = result.concat( elem.nextSibling );
+		});
+
+		return new DomElement(result).filter(selector);
+	}
+
+	prev( selector ) {
+		let result = [];
+		this.each(elem=>{
+			result = result.concat( elem.previousSibling );
+		});
+
+		return new DomElement(result).filter(selector);
+	}
+
+	nextAll( selector ) {
+		let result = [];
+		this.each(elem=>{
+			result = result.concat( dir( elem, "nextSibling" ) );
+		});
+
+		return new DomElement(result).filter(selector);
+	}
+
+	prevAll( selector ) {
+		let result = [];
+		this.each(elem=>{
+			result = result.concat( dir( elem, "previousSibling" ) );
+		});
+
+		return new DomElement(result).filter(selector);
+	}
+
+	parent( selector ) {
+		let result = [];
+		this.each(elem=>{
+			let parent = elem.parentNode;
+			if(parent && parent.nodeType !== 11){
+				result = result.concat( parent );
+			}
+		});
+
+		return new DomElement(result).filter(selector);
+	}
+
+	parents( selector ) {
+		let result = [];
+		this.each(elem=>{
+			result = result.concat( dir( elem, "parentNode" ) );
+		});
+
+		return new DomElement(result).filter(selector);
+	}
+
+	/**
+	 * filter - 过滤
+	 *
+	 * @param  {string|DomElement|HTMLElement} selector description
+	 * @return {type}          description
+	 */
+	filter(selector){
+		if(!selector) return this;
+		let result = [];
+		if(selector instanceof DomElement){
+			this.each(elem=>{
+				selector.each(preElem=>{
+					elem === preElem && result.push(elem);
+				});
+			});
+		}else if(selector.nodeType === 1){
+			this.each(elem=>{
+				elem === selector && result.push(elem);
+			});
+		}else if(typeof selector === 'string'){
+			this.each(elem=>{
+				elem.matches(selector) && result.push(elem);
+			});
+		}
+		return new DomElement(result);
+	}
+
+	index( selector ) {
+
+		// No argument, return index in parent
+		if ( !selector ) {
+			return ( this[ 0 ] && this[ 0 ].parentNode ) ? this.eq(0).prevAll().length : -1;
+		}
+
+		// index in selector
+		if ( typeof selector === "string" ) {
+			return [].indexOf.call( new DomElement( selector ), this[ 0 ] );
+		}
+	}
+
 	addClass(className) {
 		if (!className) return this;
 
@@ -242,7 +354,7 @@ class DomElement {
 	removeClass(className) {
 		if (!className) return this;
 
-		return this.forEach(elem => {
+		return this.each(elem => {
 			let arr;
 			if (elem.className) {
 
@@ -266,12 +378,12 @@ class DomElement {
 			/*json格式*/
 			return this.each(elem => {
 				for(let name in key){
-					const styleName = this._formatStyleName(name);
+					const styleName = formatStyleName(name);
 					elem.style[styleName] = key[name];
 				}
 			});
 		}else if(!val){
-			const styleName = this._formatStyleName(key);
+			const styleName = formatStyleName(key);
 			const elem = this.get(0);
 			if(elem){
 				let style = document.defaultView.getComputedStyle(elem, null);
@@ -279,24 +391,11 @@ class DomElement {
 			}
 			return '';
 		}else if(typeof key === 'string'){
-			const styleName = this._formatStyleName(key);
+			const styleName = formatStyleName(key);
 			return this.each(elem => {
 				elem.style[styleName] = val;
 			});
 		}
-	}
-
-	/**
-	 * _formatStyleName - 将 background-color 变为backgroundColor
-	 *
-	 * @param  {string} name description
-	 * @return {string}      description
-	 */
-	_formatStyleName(name){
-		if(typeof name !== 'string') return name;
-		return name.replace(/(-\w)/img, function($0,$1){
-			return $1.replace('-', '').toUpperCase();
-		});
 	}
 
 	/*显示*/
@@ -384,6 +483,46 @@ class DomElement {
 			height: elem.offsetHeight,
 		}
 	}
+}
+
+/**
+ * formatStyleName - 将 background-color 变为backgroundColor
+ *
+ * @param  {string} name description
+ * @return {string}      description
+ */
+function formatStyleName(name){
+	if(typeof name !== 'string') return name;
+	return name.replace(/(-\w)/img, function($0,$1){
+		return $1.replace('-', '').toUpperCase();
+	});
+}
+
+function dir( elem, dir, until ) {
+	var matched = [],
+		truncate = until !== undefined;
+
+	while ( (elem = elem[ dir ]) && elem.nodeType !== 9 ) {
+		if ( elem.nodeType === 1 ) {
+			if ( truncate && jQuery( elem ).is( until ) ) {
+				break;
+			}
+			matched.push( elem );
+		}
+	}
+	return matched;
+}
+
+function sibling(first, elem) {
+	var matched = [];
+
+	for (; first; first = first.nextSibling) {
+		if (first.nodeType === 1 && first !== elem) {
+			matched.push(first);
+		}
+	}
+
+	return matched;
 }
 
 export default function $(selector) {
