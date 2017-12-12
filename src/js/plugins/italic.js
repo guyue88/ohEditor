@@ -4,7 +4,7 @@ class Italic extends Plugin{
 	constructor(editor){
 		const _opts = {
 			button: {
-				title: '字体大小',
+				title: '字体倾斜',
 				icon: 'italic',
 				name: 'italic',
 				id: 'italic-' + editor.id

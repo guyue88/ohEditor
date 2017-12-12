@@ -5,9 +5,14 @@ import {
 	Popup
 } from './popup';
 import {
+	Command
+} from './command';
+import {
 	plugins as PLUGINS
 } from '../plugins/index';
-import $ from '../util/dome-core';
+
+import $ from '../util/dom-core';
+
 
 /*编辑器编号*/
 let ID = 1;
@@ -34,10 +39,12 @@ class OhEditor {
 		this.$wrap = void 0;
 		this.$toolbar = void 0;
 		this.$container = void 0;
-		// Button实例
+		/*Button实例*/
 		this.button = void 0;
-		// Popup实例
+		/*Popup实例*/
 		this.popup = void 0;
+		/*命令实例*/
+		this.cmd = void 0;
 	}
 
 	/**
@@ -46,9 +53,14 @@ class OhEditor {
 	 */
 	create() {
 		this._initFrame();
+
+		this.cmd = new Command(this);
+		this.button = new Button(this);
+		this.popup = new Popup(this);
+
 		this._initPlugins();
 		this.refresh();
-		console.log(this);
+
 	}
 
 	refresh(){
@@ -132,8 +144,6 @@ class OhEditor {
 
 		this.$wrap.append($toolbar);
 		this.$toolbar = $toolbar;
-		this.button = new Button($toolbar);
-		this.popup = new Popup($toolbar);
 		return this;
 	}
 
@@ -163,11 +173,6 @@ class OhEditor {
 	}
 
 }
-
-$(document).on('click', function(){
-	console.log(1);
-	$('.oh-wrap .oh-layer').hide();
-});
 
 export {
 	OhEditor

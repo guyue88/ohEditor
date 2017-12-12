@@ -2,10 +2,11 @@
  * 控制栏按钮的操作类
  */
 class Button{
-	constructor($toolbar){
-		if(!$toolbar) throw new Error('未发现 toolbar 元素，无法添加按钮！');
+	constructor(editor){
+		this.editor = editor;
+		if(!editor.$toolbar) throw new Error('未发现 toolbar 元素，无法添加按钮！');
 
-		this.$toolbar = $toolbar;
+		this.$toolbar = editor.$toolbar;
 		this.$lastWrap = void 0;
 		this._insertWrap();
 		this.buttonList = {};
@@ -66,6 +67,8 @@ class Button{
 		}else if(bntOpts.type === 'popup'){
 			$button.classList.add('oh-popup');
 			$button.dataset.popup = `oh-popup-${bntOpts.id}`;
+		}else{
+			$button.classList.add('oh-cmd-btn');
 		}
 
 		$button.append($icon);

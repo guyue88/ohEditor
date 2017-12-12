@@ -4,7 +4,7 @@
 class Plugin{
 	constructor(opts, editor){
 		this.opts = opts;
-		this.ins_editor = editor;
+		this.editor = editor;
 		this.init();
 	}
 
@@ -22,13 +22,12 @@ class Plugin{
 	 * @return {[type]} [description]
 	 */
 	initButton(){
-		if(this.ins_editor._opts.toolbar
+		if(this.editor._opts.toolbar
 			&& this.opts.button
-			&& this.ins_editor._opts.toolbar.indexOf(this.opts.button.name) !== -1){
-			this.ins_editor.button.pushButton(this.opts.button);
+			&& this.editor._opts.toolbar.indexOf(this.opts.button.name) !== -1){
+			this.editor.button.pushButton(this.opts.button);
 		}
 	}
-
 
 	/**
 	 * initPopup - 初始化各种弹层，如图片上传弹层
@@ -36,8 +35,8 @@ class Plugin{
 	 * @return {type}  description
 	 */
 	initPopup(){
-		if(this.opts.popup && this.ins_editor.popup){
-			this.ins_editor.popup.pushPopup(this.opts.popup);
+		if(this.opts.popup && this.editor.popup){
+			this.editor.popup.pushPopup(this.opts.popup);
 		}
 	}
 }

@@ -1,19 +1,20 @@
-import $ from '../util/dome-core';
+import $ from '../util/dom-core';
 
 /**
  * 弹层控制
  */
 export class Popup{
-	constructor($toolbar){
-		if(!$toolbar) throw new Error('未发现 toolbar 元素，无法添加弹层！');
+	constructor(editor){
+		this.editor = editor;
+		if(!editor.$toolbar) throw new Error('未发现 toolbar 元素，无法添加弹层！');
 
-		this.$toolbar = $($toolbar);
+		this.$toolbar = $(editor.$toolbar);
 		this.$wrap = this._insertWrap();
 		this.popupList = [];
 	}
 
 	/**
-	 * render - 渲染搜索弹层
+	 * render - 渲染搜索弹层，弹层是插件里面定义的，直接将所有定义的插件渲染出来
 	 *
 	 * @return {type}  description
 	 */
@@ -97,13 +98,22 @@ export class Popup{
 
 	_toggleLayer($btn){
 		const self = this;
+		const $layer = $('.oh-wrap .oh-layer');
 		$btn.on('click', function(e){
-			e.stopPropagation();
 			var me = $(this),
 				$popup = self.$toolbar.find(`#${me.data('popup')}`);
 
 			$popup.show();
 			return false;
+		});
+
+		$layer.on('click', function(e) {
+			e.stopPropagation();
+			e.cancelBubble = true;
+		});
+		/*点击其他地方关闭弹层*/
+		$(document).on('click', function(){
+			$layer.hide();
 		});
 	}
 

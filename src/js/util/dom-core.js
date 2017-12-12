@@ -1,3 +1,5 @@
+import ajax from './ajax';
+
 Element.prototype.matches =
 	Element.prototype.matches ||
 	Element.prototype.matchesSelector ||
@@ -63,12 +65,12 @@ function isDOMList(list) {
 	return false;
 }
 
-class DomElement {
+class VN {
 	constructor(selector, scope) {
 		if (!selector) return;
 
-		// selector 本来就是 DomElement 对象，直接返回
-		if (selector instanceof DomElement) return selector;
+		// selector 本来就是 VN 对象，直接返回
+		if (selector instanceof VN) return selector;
 
 		this.selector = selector;
 		this.length = 0;
@@ -90,11 +92,11 @@ class DomElement {
 			if (/^</.test(selector)) {
 				result = createElement(selector);
 			} else {
-				/*选择器，scope必须是DomElement或者字符串*/
+				/*选择器，scope必须是VN或者字符串*/
 				if(scope){
 					if(typeof scope === 'string'){
 						result = querySelectorAll(selector, querySelectorAll(scope));
-					}else if(scope instanceof DomElement){
+					}else if(scope instanceof VN){
 						result = querySelectorAll(selector, scope);
 					}else{
 						result = [];
@@ -133,7 +135,7 @@ class DomElement {
 		this.each(elem => {
 			cloneList.push(elem.cloneNode(!!deep));
 		});
-		return new DomElement(cloneList);
+		return new VN(cloneList);
 	}
 
 	size(){
@@ -154,8 +156,8 @@ class DomElement {
 	}
 
 	eq(index){
-		if(index === undefined) return this;
-		return new DomElement(this.get(index));
+		if(index === void 0) return this;
+		return new VN(this.get(index));
 	}
 
 	attr(key, val) {
@@ -192,7 +194,15 @@ class DomElement {
 
 				if (!selector) {
 					/*无代理*/
-					elem.addEventListener(type, fn);
+					elem.addEventListener(type, function(e){
+						let res = fn.call(this, e);
+						if(res === false){
+							e.preventDefault;
+							e.returnValue = false;
+							e.stopPropagation();
+							e.cancelBubble = true;
+						}
+					});
 					return;
 				}
 
@@ -207,7 +217,7 @@ class DomElement {
 							/*执行绑定的函数*/
 							let res = fn.call(target, e);
 
-							if(!res){
+							if(res === false){
 								e.preventDefault;
 								e.returnValue = false;
 								e.stopPropagation();
@@ -233,7 +243,7 @@ class DomElement {
 			result = result.concat( sibling( ( elem.parentNode || {} ).firstChild, elem ) );
 		});
 
-		return new DomElement(result).filter(selector);
+		return new VN(result).filter(selector);
 	}
 
 	next( selector ) {
@@ -242,7 +252,7 @@ class DomElement {
 			result = result.concat( elem.nextSibling );
 		});
 
-		return new DomElement(result).filter(selector);
+		return new VN(result).filter(selector);
 	}
 
 	prev( selector ) {
@@ -251,7 +261,7 @@ class DomElement {
 			result = result.concat( elem.previousSibling );
 		});
 
-		return new DomElement(result).filter(selector);
+		return new VN(result).filter(selector);
 	}
 
 	nextAll( selector ) {
@@ -260,7 +270,7 @@ class DomElement {
 			result = result.concat( dir( elem, "nextSibling" ) );
 		});
 
-		return new DomElement(result).filter(selector);
+		return new VN(result).filter(selector);
 	}
 
 	prevAll( selector ) {
@@ -269,7 +279,7 @@ class DomElement {
 			result = result.concat( dir( elem, "previousSibling" ) );
 		});
 
-		return new DomElement(result).filter(selector);
+		return new VN(result).filter(selector);
 	}
 
 	parent( selector ) {
@@ -281,7 +291,7 @@ class DomElement {
 			}
 		});
 
-		return new DomElement(result).filter(selector);
+		return new VN(result).filter(selector);
 	}
 
 	parents( selector ) {
@@ -290,19 +300,19 @@ class DomElement {
 			result = result.concat( dir( elem, "parentNode" ) );
 		});
 
-		return new DomElement(result).filter(selector);
+		return new VN(result).filter(selector);
 	}
 
 	/**
 	 * filter - 过滤
 	 *
-	 * @param  {string|DomElement|HTMLElement} selector description
+	 * @param  {string|VN|HTMLElement} selector description
 	 * @return {type}          description
 	 */
 	filter(selector){
 		if(!selector) return this;
 		let result = [];
-		if(selector instanceof DomElement){
+		if(selector instanceof VN){
 			this.each(elem=>{
 				selector.each(preElem=>{
 					elem === preElem && result.push(elem);
@@ -317,7 +327,7 @@ class DomElement {
 				elem.matches(selector) && result.push(elem);
 			});
 		}
-		return new DomElement(result);
+		return new VN(result);
 	}
 
 	index( selector ) {
@@ -329,7 +339,7 @@ class DomElement {
 
 		// index in selector
 		if ( typeof selector === "string" ) {
-			return [].indexOf.call( new DomElement( selector ), this[ 0 ] );
+			return [].indexOf.call( new VN( selector ), this[ 0 ] );
 		}
 	}
 
@@ -441,7 +451,7 @@ class DomElement {
 			result = result.concat(querySelectorAll(selector, [elem]));
 		});
 
-		return new DomElement(result);
+		return new VN(result);
 	}
 
 	/*获取当前元素的 text*/
@@ -525,7 +535,7 @@ function formatStyleName(name){
 
 function dir( elem, dir, until ) {
 	var matched = [],
-		truncate = until !== undefined;
+		truncate = until !== void 0;
 
 	while ( (elem = elem[ dir ]) && elem.nodeType !== 9 ) {
 		if ( elem.nodeType === 1 ) {
@@ -550,8 +560,12 @@ function sibling(first, elem) {
 	return matched;
 }
 
-export default function $(selector) {
-	return new DomElement(selector);
+function $(selector) {
+	return new VN(selector);
 }
+
+$.ajax = ajax;
+
+export default $;
 
 window.$ = $;

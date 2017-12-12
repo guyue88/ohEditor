@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>图片上传实例</title>
+	</head>
+	<body>
+		<div class="form">
+			<form action="http://localhost:9090/upload" method="post" target="upload-iframe" enctype="multipart/form-data">
+				<input type="file" name="file">
+				<button type="submit">
+					提交
+				</button>
+			</form>
+		</div>
+		<div class="img"></div>
+		<iframe name="upload-iframe" style="display:none"></iframe>
+		<script>
+			document.querySelectorAll('iframe')[0].addEventListener('load', function(e){
+				const doc = this.contentWindow.document;
+				const path = (JSON.parse(doc.body.innerText) || {}).path;
+				var img = document.createElement('img');
+				img.style = 'width:300px;';
+				img.src = path;
+				document.querySelectorAll('.img')[0].append(img);
+			});
+		</script>
+	</body>
+</html>
