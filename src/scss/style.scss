@@ -1,16 +1,23 @@
-.clearfix:after{
-	font-size: 0;
+.oh-wrap{
+	ul,li{
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+	.clearfix:after{
+		font-size: 0;
 
-	display: block;
-	visibility: hidden;
-	clear: both;
+		display: block;
+		visibility: hidden;
+		clear: both;
 
-	height: 0;
+		height: 0;
 
-	content: ' ';
-}
-.clearfix{
-	display: inline-block;
+		content: ' ';
+	}
+	.clearfix{
+		display: inline-block;
+	}
 }
 .oh-toolbar{
 	position: relative;
@@ -60,7 +67,7 @@
 			 -o-user-select: none;
 		 -khtml-user-select: none;
 
-		&:hover{
+		&:hover,&.oh-active{
 			background-color: #ebebeb
 		}
 		&.oh-drop:after{
@@ -141,80 +148,116 @@
 				border-bottom: 5px solid #222;
 				vertical-align: middle;
 			}
-		}
-		.oh-popup-tab{
-			display: block;
-			-webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 1px 1px rgba(0,0,0,0.16);
-			-moz-box-shadow: 0 1px 3px rgba(0,0,0,0.12),0 1px 1px 1px rgba(0,0,0,0.16);
-			box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 1px 1px rgba(0,0,0,0.16);
-			white-space: nowrap;
-			line-height: 0;
-			border-bottom: 0px;
 
-			&,li{
-				list-style: none;
-				padding: 0;
-				margin: 0;
-			}
-			li{
-				float: left;
-				&.oh-active{
-					&,& .oh-menu{
-						color: #1e88e5;
-						background: transparent;
-						pointer-events: none;
+			.oh-popup-tab{
+				display: block;
+				-webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 1px 1px rgba(0,0,0,0.16);
+				-moz-box-shadow: 0 1px 3px rgba(0,0,0,0.12),0 1px 1px 1px rgba(0,0,0,0.16);
+				box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 1px 1px rgba(0,0,0,0.16);
+				white-space: nowrap;
+				line-height: 0;
+				border-bottom: 0px;
+
+				li{
+					float: left;
+					&.oh-active{
+						&,& .oh-menu{
+							color: #1e88e5;
+							background: transparent;
+							pointer-events: none;
+						}
 					}
 				}
 			}
-		}
-		.oh-popup-cont{
-			padding: 10px;
-			width: 200px;
-		}
-		.oh-popup-child {
-			display: none;
-			&.oh-active{
-				display: block;
+			.oh-popup-cont{
+				padding: 10px;
+				width: 200px;
 			}
-		}
-		.oh-popup-child-upload{
-			height: 70px;
-			position: relative;
-			line-height: 70px;
-			text-align: center;
-			font-size: 14px;
-			border: dashed 2px #bdbdbd;
+			.oh-popup-child {
+				display: none;
+				&.oh-active{
+					display: block;
+				}
+			}
+			.oh-popup-child-upload{
+				height: 70px;
+				position: relative;
+				line-height: 70px;
+				text-align: center;
+				font-size: 14px;
+				border: dashed 2px #bdbdbd;
 
-			.oh-form{
-				position: absolute;
-				top: 0;
-				left: 0;
-				right: 0;
-				bottom: 0;
-				z-index: 1001;
-				cursor: pointer;
-				-webkit-opacity: 0;
-				-moz-opacity: 0;
-				opacity: 0;
-				-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
-
-				input{
+				.oh-form{
 					position: absolute;
 					top: 0;
 					left: 0;
 					right: 0;
 					bottom: 0;
-					width: 100%;
+					z-index: 1001;
 					cursor: pointer;
+					-webkit-opacity: 0;
+					-moz-opacity: 0;
+					opacity: 0;
+					-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
 
-					&:active,
-					&:hover,
-					&:focus{
-						outline: none;
+					input{
+						position: absolute;
+						top: 0;
+						left: 0;
+						right: 0;
+						bottom: 0;
+						width: 100%;
+						cursor: pointer;
+
+						&:active,
+						&:hover,
+						&:focus{
+							outline: none;
+						}
 					}
 				}
 			}
+
 		}
+
+		.oh-drop-layer{
+			visibility: hidden;
+			display: block;
+			position: absolute;
+			right: auto;
+			bottom: auto;
+			height: auto;
+			z-index: 1000;
+			-webkit-overflow-scrolling: touch;
+			overflow: hidden;
+			zoom: 1;
+			border-radius: 0 0 2px 2px;
+			-moz-border-radius: 0 0 2px 2px;
+			-webkit-border-radius: 0 0 2px 2px;
+			-moz-background-clip: padding;
+			-webkit-background-clip: padding-box;
+			background-clip: padding-box;
+			background: #fff;
+			-webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 1px 1px rgba(0,0,0,0.16);
+			-moz-box-shadow: 0 1px 3px rgba(0,0,0,0.12),0 1px 1px 1px rgba(0,0,0,0.16);
+			box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 1px 1px rgba(0,0,0,0.16);
+			max-height: 275px;
+			color: #222;
+
+			a{
+				color: #222;
+				text-decoration: none;
+				display: block;
+				padding: 4px 15px;
+				&:hover{
+					background-color: #ebebeb;
+				}
+			}
+			.oh-drop-layer li{
+
+			}
+		}
+
 	}
 }
 

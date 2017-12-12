@@ -13,7 +13,6 @@ import {
 
 import $ from '../util/dom-core';
 
-
 /*编辑器编号*/
 let ID = 1;
 

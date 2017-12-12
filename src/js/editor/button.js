@@ -1,25 +1,28 @@
+import $ from '../util/dom-core';
+
 /**
  * 控制栏按钮的操作类
  */
 class Button{
 	constructor(editor){
-		this.editor = editor;
+		this._editor = editor;
 		if(!editor.$toolbar) throw new Error('未发现 toolbar 元素，无法添加按钮！');
 
-		this.$toolbar = editor.$toolbar;
-		this.$lastWrap = void 0;
-		this._insertWrap();
+		this.$toolbar = $(editor.$toolbar);
+		this.$lastWrap = this._insertWrap();
 		this.buttonList = {};
 	}
 
+
 	/**
-	 * 添加一个按钮
-	 * @param {Object} [opts] [按钮参数，包含title|icon|name|id]
-	 * @return {[element]} 按钮元素
+	 * pushButton - 挂载按钮，按照配置顺序统一渲染
+	 * @param {Object} opts 按钮参数，包含title|icon|name|id
+	 *
+	 * @return {type}  description
 	 */
 	pushButton(opts){
 		if(!opts || !opts.name) return this;
-		this.buttonList[opts.name] = opts;
+		this.buttonList[opts.name.trim()] = opts;
 	}
 
 	/**
@@ -34,7 +37,7 @@ class Button{
 			this._split();
 			return this;
 		}else if(name === '-'){
-			this._insertWrap();
+			this.$lastWrap = this._insertWrap();
 			return this;
 		}else if(!this.buttonList[name]) {
 			return this;
@@ -51,27 +54,25 @@ class Button{
 	 *
 	 * @return {$button}  description
 	 */
-	_renderButton(bntOpts){
-		let $button = document.createElement('button');
-		let $icon = document.createElement('span');
+	_renderButton(btnOpts){
+		let $button = $(`<button type="button" id="oh-btn-${btnOpts.id}" title="${btnOpts.title}" class="oh-menu">
+				<span class="fa fa-${btnOpts.icon}"></span>
+			</button>`);
 
-		$button.setAttribute('type', 'button');
-		$button.setAttribute('id', `oh-btn-${bntOpts.id}`);
-		$button.setAttribute('title', bntOpts.title);
-		$button.classList.add(`oh-menu`);
-		$icon.classList.add('fa');
-		$icon.classList.add(`fa-${bntOpts.icon}`);
-
-		if(bntOpts.type === 'drop'){
-			$button.classList.add('oh-drop');
-		}else if(bntOpts.type === 'popup'){
-			$button.classList.add('oh-popup');
-			$button.dataset.popup = `oh-popup-${bntOpts.id}`;
+		if(btnOpts.type === 'drop'){
+			$button.addClass('oh-drop');
+			$button.data('popup', `oh-drop-${btnOpts.id}`);
+		}else if(btnOpts.type === 'popup'){
+			$button.addClass('oh-popup');
+			$button.data('popup', `oh-popup-${btnOpts.id}`);
 		}else{
-			$button.classList.add('oh-cmd-btn');
+			$button.addClass('oh-cmd-btn');
+			/*普通命令按钮直接绑定命令操作*/
+			if(btnOpts.cmd){
+				this.bindCMD($button, btnOpts.cmd);
+			}
 		}
 
-		$button.append($icon);
 		return $button;
 	}
 
@@ -80,12 +81,9 @@ class Button{
 	 * @return {element}      最后面的容器
 	 */
 	_insertWrap(){
-		let $div = document.createElement('div');
-		$div.classList.add('oh-button-wrap');
-		$div.classList.add('clearfix');
+		let $div = $('<div class="clearfix oh-button-wrap"></div>');
 
 		this.$toolbar.append($div);
-		this.$lastWrap = $div;
 		return $div;
 	}
 
@@ -94,10 +92,23 @@ class Button{
 	 * @return {[type]}      [description]
 	 */
 	_split(){
-		let $span = document.createElement('span');
-		$span.classList.add('oh-split');
+		let $span = $('<span class="oh-split"></span>');
 		this.$lastWrap.append($span);
 		return $span;
+	}
+
+	/**
+	 * bindCMD - 给按钮绑定命令
+	 *
+	 * @param  {VN} $btn description
+	 * @param  {string} cmd 命令名称
+	 * @return {type}      description
+	 */
+	bindCMD($btn, cmd){
+		const self = this;
+		$btn.on('click', function(e){
+			self._editor.cmd.do(cmd);
+		});
 	}
 }
 

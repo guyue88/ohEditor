@@ -2,12 +2,15 @@ import { Plugin } from './Plugin';
 
 class Italic extends Plugin{
 	constructor(editor){
+		const id = 'italic-' + editor.id;
+		const name = 'italic';
 		const _opts = {
 			button: {
 				title: '字体倾斜',
 				icon: 'italic',
-				name: 'italic',
-				id: 'italic-' + editor.id
+				name: name,
+				id: id,
+				cmd: 'italic'
 			}
 		};
 		super(_opts, editor);

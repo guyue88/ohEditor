@@ -7,7 +7,8 @@ class Bold extends Plugin{
 				title: '加粗',
 				icon: 'bold',
 				name: 'bold',
-				id: 'bold-' + editor.id
+				id: 'bold-' + editor.id,
+				cmd: 'bold'
 			}
 		};
 		super(_opts, editor);

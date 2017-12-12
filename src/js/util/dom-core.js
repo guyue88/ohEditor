@@ -566,6 +566,11 @@ function $(selector) {
 
 $.ajax = ajax;
 
+$.inArray = function(value, array){
+	if(!value || !array || !Array.isArray(array)) return -1;
+	return array.indexOf(value);
+}
+
 export default $;
 
 window.$ = $;

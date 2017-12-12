@@ -15,6 +15,7 @@ class Image extends Plugin{
 			popup: {
 				id: id,
 				name: name,
+				type: 'popup',
 				tabs: [{
 					name: 'upload',
 					icon: 'upload',

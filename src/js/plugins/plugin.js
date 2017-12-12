@@ -13,29 +13,31 @@ class Plugin{
 	 * @return {[type]} [description]
 	 */
 	init(){
-		this.initButton();
-		this.initPopup();
+		this.mountButton();
+		this.mountPopup();
 	}
 
 	/**
 	 * 如果配置了 toolbar.xxx ，且该插件有按钮配置,则生成对应按钮
 	 * @return {[type]} [description]
 	 */
-	initButton(){
+	mountButton(){
 		if(this.editor._opts.toolbar
 			&& this.opts.button
-			&& this.editor._opts.toolbar.indexOf(this.opts.button.name) !== -1){
+			&& $.inArray(this.opts.button.name, this.editor._opts.toolbar) !== -1){
 			this.editor.button.pushButton(this.opts.button);
 		}
 	}
 
 	/**
-	 * initPopup - 初始化各种弹层，如图片上传弹层
+	 * mountPopup - 初始化各种弹层，如图片上传弹层
 	 *
 	 * @return {type}  description
 	 */
-	initPopup(){
-		if(this.opts.popup && this.editor.popup){
+	mountPopup(){
+		if(this.editor._opts.toolbar 
+			&& this.opts.popup
+			&& $.inArray(this.opts.popup.name, this.editor._opts.toolbar) !== -1){
 			this.editor.popup.pushPopup(this.opts.popup);
 		}
 	}
