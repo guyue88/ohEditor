@@ -2,8 +2,6 @@ import { Plugin } from './Plugin';
 
 class FontSize extends Plugin{
 	constructor(editor){
-		this._editor = editor;
-		
 		const id = 'font-size-' + editor.id;
 		const name = 'fontSize';
 		const _opts = {
@@ -56,6 +54,7 @@ class FontSize extends Plugin{
 			}
 		};
 		super(_opts, editor);
+		this._editor = editor;
 	}
 }
 
