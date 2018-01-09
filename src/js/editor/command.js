@@ -4,7 +4,7 @@
 export class Command{
 	constructor(editor){
 		console.log(editor);
-		this.editor = editor;
+		this._editor = editor;
 	}
 
 	/**

@@ -65,12 +65,12 @@ function isDOMList(list) {
 	return false;
 }
 
-class VN {
+class VE {
 	constructor(selector, scope) {
 		if (!selector) return;
 
-		// selector 本来就是 VN 对象，直接返回
-		if (selector instanceof VN) return selector;
+		// selector 本来就是 VE 对象，直接返回
+		if (selector instanceof VE) return selector;
 
 		this.selector = selector;
 		this.length = 0;
@@ -92,11 +92,11 @@ class VN {
 			if (/^</.test(selector)) {
 				result = createElement(selector);
 			} else {
-				/*选择器，scope必须是VN或者字符串*/
+				/*选择器，scope必须是VE或者字符串*/
 				if(scope){
 					if(typeof scope === 'string'){
 						result = querySelectorAll(selector, querySelectorAll(scope));
-					}else if(scope instanceof VN){
+					}else if(scope instanceof VE){
 						result = querySelectorAll(selector, scope);
 					}else{
 						result = [];
@@ -135,7 +135,7 @@ class VN {
 		this.each(elem => {
 			cloneList.push(elem.cloneNode(!!deep));
 		});
-		return new VN(cloneList);
+		return new VE(cloneList);
 	}
 
 	size(){
@@ -157,7 +157,7 @@ class VN {
 
 	eq(index){
 		if(index === void 0) return this;
-		return new VN(this.get(index));
+		return new VE(this.get(index));
 	}
 
 	attr(key, val) {
@@ -243,7 +243,7 @@ class VN {
 			result = result.concat( sibling( ( elem.parentNode || {} ).firstChild, elem ) );
 		});
 
-		return new VN(result).filter(selector);
+		return new VE(result).filter(selector);
 	}
 
 	next( selector ) {
@@ -252,7 +252,7 @@ class VN {
 			result = result.concat( elem.nextSibling );
 		});
 
-		return new VN(result).filter(selector);
+		return new VE(result).filter(selector);
 	}
 
 	prev( selector ) {
@@ -261,7 +261,7 @@ class VN {
 			result = result.concat( elem.previousSibling );
 		});
 
-		return new VN(result).filter(selector);
+		return new VE(result).filter(selector);
 	}
 
 	nextAll( selector ) {
@@ -270,7 +270,7 @@ class VN {
 			result = result.concat( dir( elem, "nextSibling" ) );
 		});
 
-		return new VN(result).filter(selector);
+		return new VE(result).filter(selector);
 	}
 
 	prevAll( selector ) {
@@ -279,7 +279,7 @@ class VN {
 			result = result.concat( dir( elem, "previousSibling" ) );
 		});
 
-		return new VN(result).filter(selector);
+		return new VE(result).filter(selector);
 	}
 
 	parent( selector ) {
@@ -291,7 +291,7 @@ class VN {
 			}
 		});
 
-		return new VN(result).filter(selector);
+		return new VE(result).filter(selector);
 	}
 
 	parents( selector ) {
@@ -300,19 +300,19 @@ class VN {
 			result = result.concat( dir( elem, "parentNode" ) );
 		});
 
-		return new VN(result).filter(selector);
+		return new VE(result).filter(selector);
 	}
 
 	/**
 	 * filter - 过滤
 	 *
-	 * @param  {string|VN|HTMLElement} selector description
+	 * @param  {string|VE|HTMLElement} selector description
 	 * @return {type}          description
 	 */
 	filter(selector){
 		if(!selector) return this;
 		let result = [];
-		if(selector instanceof VN){
+		if(selector instanceof VE){
 			this.each(elem=>{
 				selector.each(preElem=>{
 					elem === preElem && result.push(elem);
@@ -327,7 +327,7 @@ class VN {
 				elem.matches(selector) && result.push(elem);
 			});
 		}
-		return new VN(result);
+		return new VE(result);
 	}
 
 	index( selector ) {
@@ -339,7 +339,7 @@ class VN {
 
 		// index in selector
 		if ( typeof selector === "string" ) {
-			return [].indexOf.call( new VN( selector ), this[ 0 ] );
+			return [].indexOf.call( new VE( selector ), this[ 0 ] );
 		}
 	}
 
@@ -451,7 +451,7 @@ class VN {
 			result = result.concat(querySelectorAll(selector, [elem]));
 		});
 
-		return new VN(result);
+		return new VE(result);
 	}
 
 	/*获取当前元素的 text*/
@@ -561,7 +561,7 @@ function sibling(first, elem) {
 }
 
 function $(selector) {
-	return new VN(selector);
+	return new VE(selector);
 }
 
 $.ajax = ajax;

@@ -17,7 +17,7 @@ class FontFamily extends Plugin{
 				name: name,
 				type: 'drop',
 				cmd: 'fontSize',
-				list: [{
+				dropList: [{
 					text: 10,
 					param: 10
 				},{

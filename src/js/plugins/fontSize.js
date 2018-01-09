@@ -17,38 +17,38 @@ class FontSize extends Plugin{
 				name: name,
 				type: 'drop',
 				cmd: 'fontSize',
-				list: [{
-					text: 10,
+				dropList: [{
+					html: '<span style="font-size: 10px;">10</span>',
 					param: '10px'
 				},{
-					text: 11,
+					html: '<span style="font-size: 11px">11</span>',
 					param: '11px'
 				},{
-					text: 12,
+					html: '<span style="font-size: 12px">12</span>',
 					param: '12px'
 				},{
-					text: 14,
+					html: '<span style="font-size: 14px">14</span>',
 					param: '14px'
 				},{
-					text: 16,
+					html: '<span style="font-size: 16px">16</span>',
 					param: '16px'
 				},{
-					text: 18,
+					html: '<span style="font-size: 18px">18</span>',
 					param: '18px'
 				},{
-					text: 24,
+					html: '<span style="font-size: 24px">24</span>',
 					param: '24px'
 				},{
-					text: 30,
+					html: '<span style="font-size: 30px">30</span>',
 					param: '30px'
 				},{
-					text: 36,
+					html: '<span style="font-size: 36px">36</span>',
 					param: '36px'
 				},{
-					text: 48,
+					html: '<span style="font-size: 48px">48</span>',
 					param: '48px'
 				},{
-					text: 60,
+					html: '<span style="font-size: 60px">60</span>',
 					param: '60px'
 				}]
 			}
