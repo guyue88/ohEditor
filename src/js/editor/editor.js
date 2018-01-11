@@ -44,7 +44,7 @@ class OhEditor {
 
 	/**
 	 * 入口，创建编辑器
-	 * @return {OhEditor} [OhEditor实例]
+	 * @return {OhEditor} OhEditor实例
 	 */
 	create() {
 		this._initFrame();
@@ -63,16 +63,26 @@ class OhEditor {
 	/**
 	 * html - 获取编辑区源代码
 	 *
-	 * @return {type}  description
+	 * @return {string}  编辑区源代码
 	 */
 	html(){
 		return this.$container && this.$container.html();
 	}
 
 	/**
+	 * disable - 禁用编辑
+	 *
+	 * @return {OhEditor} OhEditor实例	 
+	 */
+	disable(){
+		this.$container.attr('contenteditable', 'false');
+		return this;
+	}
+
+	/**
 	 * refresh - 刷新按钮和弹层，用于初始或重新生成按钮和弹层
 	 *
-	 * @return {OhEditor} [OhEditor实例]
+	 * @return {OhEditor} OhEditor实例
 	 */
 	refresh(){
 		this._renderButton();
@@ -83,7 +93,7 @@ class OhEditor {
 	/**
 	 * 注册插件
 	 * @param {function} [plugins] [一个或者多个插件]
-	 * @return {OhEditor} [OhEditor实例]
+	 * @return {OhEditor} OhEditor实例
 	 */
 	registerPlugin(...plugins) {
 		plugins.forEach(plugin => {
@@ -94,7 +104,7 @@ class OhEditor {
 
 	/**
 	 * 加载各种默认功能插件
-	 * @return {OhEditor} [OhEditor实例]
+	 * @return {OhEditor} OhEditor实例
 	 */
 	_initPlugins() {
 		this.registerPlugin(PLUGINS);
@@ -103,7 +113,7 @@ class OhEditor {
 
 	/**
 	 * _renderButton - 渲染按钮到控制栏，按用户定义的顺序
-	 * @return {OhEditor} [OhEditor实例]
+	 * @return {OhEditor} OhEditor实例
 	 */
 	_renderButton() {
 		if (!this._opts.toolbar || !this.button) return this;
@@ -128,7 +138,7 @@ class OhEditor {
 
 	/**
 	 * 初始化编辑器框架
-	 * @return {OhEditor} [OhEditor实例]
+	 * @return {OhEditor} OhEditor实例
 	 */
 	_initFrame() {
 		this._createWrapDom();
@@ -139,7 +149,7 @@ class OhEditor {
 
 	/**
 	 * 创建wrap
-	 * @return {OhEditor} [OhEditor实例]
+	 * @return {OhEditor} OhEditor实例
 	 */
 	_createWrapDom() {
 		let $wrap = $(`<div id="oh-editor${this.id}" class="oh-wrap"></div>`);
@@ -151,7 +161,7 @@ class OhEditor {
 
 	/**
 	 * 创建toolbar
-	 * @return {OhEditor} [OhEditor实例]
+	 * @return {OhEditor} OhEditor实例
 	 */
 	_createToolbarDom() {
 		if (!this._opts.toolbar || !this._opts.toolbar.length) {
@@ -167,7 +177,7 @@ class OhEditor {
 
 	/**
 	 * 创建可视编辑区
-	 * @return {OhEditor} [OhEditor实例]
+	 * @return {OhEditor} OhEditor实例
 	 */
 	_createContainerDom() {
 		let $container = $(`
@@ -242,7 +252,7 @@ class OhEditor {
 					self.selection.resetRange($ele[0], 0, $ele[0], 0);
 				}
 			}
-			
+
 		});
 	}
 }

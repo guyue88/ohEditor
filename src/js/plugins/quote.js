@@ -28,20 +28,24 @@ class Quote extends Plugin{
 		this._editor.cmd._blockquote = this._cmdBlockquote;
 	}
 
+	/**
+	 * _cmdBlockquote - `引用`命令处理
+	 *
+	 * @return {type}  description
+	 */
 	_cmdBlockquote(){
-		const Selection = this._editor.selection;
-		const cmd = this._editor.cmd;
-
-		const range = Selection.getRange();
+		const Selection = this._editor.selection,
+			cmd = this._editor.cmd,
+			range = Selection.getRange(),
+			emptyTagName = this._editor._opts.allowDivTransToP ? 'p' : 'div';
 
 		if(range){
-			console.log(range);
 			const parent = range.commonAncestorContainer.parentNode;
 			if(parent.nodeType === 1 && parent.nodeName.toLowerCase() === "blockquote"){
 				/*取消引用*/
 				const $parent = $(parent),
 					html = $parent.html();
-				$parent.after('<div>'+html+'</div>').remove();
+				$parent.after(`<${emptyTagName}>${html}</${emptyTagName}>`).remove();
 			}else{
 				cmd.do('formatBlock', 'BLOCKQUOTE');
 			}
