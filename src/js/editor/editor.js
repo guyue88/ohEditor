@@ -9,14 +9,17 @@ import $ from '../util/dom-core';
 /*编辑器编号*/
 let ID = 1;
 
+/*toolbar: [
+	'paragraph', 'quote', 'fontFamily', 'fontSize', 'bold', 'italic', 'color',
+	'underline', 'strikeThrough', '|', 'align', 'ol', 'ul', 'insertLink', 'unlink',
+	'insertImage', 'insertVideo', 'insertFile', 'insertTable', '|', 'insertHR',
+	'clearFormatting', 'print', 'help', 'html', '|', 'undo', 'redo', 'fullscreen'
+],*/
 class OhEditor {
 	constructor(elementID, opts) {
 		const _opts = {
 			toolbar: [
-				'paragraph', 'quote', 'fontFamily', 'fontSize', 'bold', 'italic', 'color',
-				'underline', 'strikeThrough', '|', 'align', 'ol', 'ul', 'insertLink', 'unlink',
-				'insertImage', 'insertVideo', 'insertFile', 'insertTable', '|', 'insertHR',
-				'clearFormatting', 'print', 'help', 'html', '|', 'undo', 'redo', 'fullscreen'
+				'paragraph', 'quote', 'fontFamily', 'fontSize', 'bold', 'italic', 'insertImage'
 			],
 			minHeight: '300px',
 			minWidth: '100%',
@@ -72,7 +75,7 @@ class OhEditor {
 	/**
 	 * disable - 禁用编辑
 	 *
-	 * @return {OhEditor} OhEditor实例	 
+	 * @return {OhEditor} OhEditor实例
 	 */
 	disable(){
 		this.$container.attr('contenteditable', 'false');

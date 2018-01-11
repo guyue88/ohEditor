@@ -18,6 +18,10 @@ class Paragraph extends Plugin{
 				type: 'drop',
 				cmd: 'paragraph',
 				dropList: [{
+					text: '文本',
+					title: '正常文本',
+					param: 'normal'
+				},{
 					title: '标题1',
 					html: '<h1>标题1</h1>',
 					param: '<h1>'
@@ -74,7 +78,13 @@ class Paragraph extends Plugin{
 
 		if(range){
 			const parent = range.commonAncestorContainer.parentNode;
-			if(parent.nodeType === 1 && parent.nodeName.toLowerCase() === tagName.toLowerCase()){
+			if(
+				parent.nodeType === 1 &&
+				(
+					parent.nodeName.toLowerCase() === tagName.toLowerCase() ||
+					tagName.toLowerCase() === 'normal'
+				)
+			){
 				/*取消段落*/
 				const $parent = $(parent),
 					html = $parent.html();
