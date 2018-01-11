@@ -424,12 +424,38 @@ class VE {
 		return this.css('display', 'none')
 	}
 
+	prepend($children){
+		$children = $($children);
+		return this.each(target => {
+			$children.each(child => {
+				target.insertBefore(child, target.firstChild);
+			});
+		});
+	}
+
 	/*增加子节点*/
 	append($children) {
-		return this.each(elem => {
+		$children = $($children);
+		return this.each(target => {
 			$children.each(child => {
-				elem.appendChild(child);
+				target.appendChild(child);
 			});
+		});
+	}
+
+	after($ele){
+		const ele = $($ele)[0];
+		if(!ele) return;
+		return this.each(target=>{
+			target.parentNode.insertBefore(ele, target.nextSibling);
+		});
+	}
+
+	before($ele){
+		const ele = $($ele)[0];
+		if(!ele) return;
+		return this.each(target=>{
+			target.parentNode.insertBefore(ele, target);
 		});
 	}
 

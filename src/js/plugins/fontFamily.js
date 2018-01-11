@@ -16,44 +16,37 @@ class FontFamily extends Plugin{
 				id: id,
 				name: name,
 				type: 'drop',
-				cmd: 'fontSize',
+				cmd: 'fontFamily',
 				dropList: [{
-					text: 10,
-					param: 10
+					html: '<span style="font-family: \'Microsoft Yahei\'">微软雅黑</span>',
+					param: 'Microsoft Yahei'
 				},{
-					text: 11,
-					param: 11
+					html: '<span style="font-family: SimSun">宋体</span>',
+					param: 'SimSun'
 				},{
-					text: 12,
-					param: 12
+					html: '<span style="font-family: Arial">Arial</span>',
+					param: 'Arial'
 				},{
-					text: 14,
-					param: 14
+					html: '<span style="font-family: Helvetica">Helvetica</span>',
+					param: 'Helvetica'
 				},{
-					text: 16,
-					param: 16
-				},{
-					text: 18,
-					param: 18
-				},{
-					text: 24,
-					param: 24
-				},{
-					text: 30,
-					param: 30
-				},{
-					text: 36,
-					param: 36
-				},{
-					text: 48,
-					param: 48
-				},{
-					text: 60,
-					param: 60
+					html: '<span style="font-family: Tahoma">Tahoma</span>',
+					param: 'Tahoma'
 				}]
 			}
 		};
 		super(_opts, editor);
+		this.resetCmd();
+	}
+
+
+	/**
+	 * resetCmd - 重置fontFamily命令
+	 *
+	 * @return {type}  description
+	 */
+	resetCmd(){
+
 	}
 }
 

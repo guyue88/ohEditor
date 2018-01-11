@@ -1,6 +1,7 @@
 import { Button } from './button';
 import { Popup } from './popup';
 import { Command } from './command';
+import { Selection } from './selection';
 import { plugins as PLUGINS } from '../plugins/index';
 
 import $ from '../util/dom-core';
@@ -19,7 +20,8 @@ class OhEditor {
 			],
 			minHeight: '300px',
 			minWidth: '100%',
-			placeHolder: '请输入内容'
+			initialContent: '欢迎使用ohEditor!',
+			allowDivTransToP: true
 		};
 
 		this.id = ID;
@@ -36,6 +38,8 @@ class OhEditor {
 		this.popup = void 0;
 		/*命令实例*/
 		this.cmd = void 0;
+		/*selection实例*/
+		this.selection = new Selection();
 	}
 
 	/**
@@ -51,8 +55,18 @@ class OhEditor {
 
 		this._initPlugins();
 		this.refresh();
-		this._bindCMD();
+		this._bindCmd();
+		this._bindEvent();
 		return this;
+	}
+
+	/**
+	 * html - 获取编辑区源代码
+	 *
+	 * @return {type}  description
+	 */
+	html(){
+		return this.$container && this.$container.html();
 	}
 
 	/**
@@ -156,7 +170,13 @@ class OhEditor {
 	 * @return {OhEditor} [OhEditor实例]
 	 */
 	_createContainerDom() {
-		let $container = $(`<div class="oh-container" contenteditable="true" style="width: ${this._opts.minWidth};height: ${this._opts.minHeight}"></div>`);
+		let $container = $(`
+			<div class="oh-container" contenteditable="true" style="width: ${this._opts.minWidth};height: ${this._opts.minHeight}">
+				${this._opts.allowDivTransToP ? "<p>" : "<div>"}
+					${this._opts.initialContent}
+				${this._opts.allowDivTransToP ? "</p>" : "</div>"}
+			</div>
+		`);
 
 		this.$wrap.append($container);
 		this.$container = $container;
@@ -164,12 +184,12 @@ class OhEditor {
 	}
 
 	/**
-	 * _bindCMD - 给[data-cmd]绑定命令
+	 * _bindCmd - 给[data-cmd]绑定命令
 	 *
 	 * @param  {VE} $div description
 	 * @return {type}      description
 	 */
-	_bindCMD(){
+	_bindCmd(){
 		const self = this;
 		this.$editor.on('click', '[data-cmd]', function(){
 			const me = $(this),
@@ -177,6 +197,52 @@ class OhEditor {
 				param = me.data('param');
 
 			cmd && self.cmd.do(cmd, param);
+		});
+	}
+
+	/**
+	 * _bindEvent - 全局状态下的事件监听
+	 *
+	 * @return {type}  description
+	 */
+	_bindEvent(){
+		const self = this,
+			emptyElem = this._opts.allowDivTransToP ? '<p><br/></p>' : '<div><br/></div>';
+
+		if(this._opts.allowDivTransToP){
+			let timer = void 0;
+			this.$container.on('keyup', function(e){
+				if(timer) clearTimeout(timer);
+				timer = setTimeout(function(){
+					/*删除，全部内容删除后需要填充一个空的p*/
+					if(e.keyCode === 8){
+						if(!self.html()){
+							self.$container.prepend(emptyElem);
+						}
+					}
+				}, 200);
+			});
+		}
+
+		/**
+		 * 处理换行问题，换行时会复制前一个标签的所有样式及结构
+		 * TODO 事件可能被屏蔽，需要需求更好的解决方案
+		 **/
+		const blockTag = ['blockquote'];
+		this.$container.on('keydown', function(e){
+			if(e.keyCode === 13){
+				const range = self.selection.getRange(),
+					parent = range.commonAncestorContainer.parentNode,
+					tagName = parent.nodeType === 1 ? parent.nodeName.toLowerCase() : '';
+
+				if(blockTag.indexOf(tagName) !== -1){
+					e.preventDefault();
+					const $ele = $(emptyElem);
+					$(parent).after($ele);
+					self.selection.resetRange($ele[0], 0, $ele[0], 0);
+				}
+			}
+			
 		});
 	}
 }
