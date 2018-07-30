@@ -1,0 +1,23 @@
+.oh-container{
+	line-height: 1.5;
+	p{
+		padding: 0;
+		margin: 0;
+		margin-bottom: 10px;
+	}
+	blockquote{
+		color: #444;
+		border-left: solid 2px #2479CC;
+		padding: 8px 0;
+		padding-left: 10px;
+		margin: 0;
+		margin-bottom: 10px;
+		background-color: #f8f8f8;
+		overflow: hidden;
+		font-size: .9em;
+	}
+	h1,h2,h3,h4,h5,h6{
+		margin: 0;
+		margin-bottom: 10px;
+	}
+}
