@@ -1,11 +1,4 @@
-const path = require('path');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-
 module.exports = {
-	entry: {
-		editor: path.resolve(__dirname, 'src/editor.js')
-	},
 	module: {
 		rules: [{
 			test: /(\.js)$/,
@@ -23,16 +16,15 @@ module.exports = {
 			},{
 				loader: "sass-loader"
 			}]
+		}, {
+		    test: /\.(woff2?|svg|eot|ttf|otf)(\?.*)?$/,
+		    use: [{
+		        loader: 'file-loader',
+		        options: {
+		            limit: 12000,
+		            name: '[name]_[hash:6].[ext]'
+		        }
+		    }]
 		}]
-	},
-	plugins: [
-		new CleanWebpackPlugin(['dist']),
-		new HtmlWebpackPlugin({
-			template: './src/editor.html'
-		})
-	],
-	output: {
-		filename: '[name].bundle.js',
-		path: path.resolve(__dirname, 'dist')
 	}
 };

@@ -1,10 +1,13 @@
-import { Button } from './button';
-import { Popup } from './popup';
-import { Command } from './command';
-import { Selection } from './selection';
-import { plugins as PLUGINS } from '../plugins/index';
+import { Button } from './lib/editor/button';
+import { Popup } from './lib/editor/popup';
+import { Command } from './lib/editor/command';
+import { Selection } from './lib/editor/selection';
+import { plugins as PLUGINS } from './lib/plugins/index';
 
-import $ from '../util/dom-core';
+import $ from './lib/util/dom-core';
+
+import './assets/scss/style.scss';
+import './assets/scss/content.scss';
 
 /*编辑器编号*/
 let ID = 1;
