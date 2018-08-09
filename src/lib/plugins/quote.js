@@ -25,7 +25,7 @@ class Quote extends Plugin{
 	 * @return {type}  description
 	 */
 	resetCmd(){
-		this._editor.cmd._blockquote = this._cmdBlockquote;
+		this._editor.Cmd._blockquote = this._cmdBlockquote;
 	}
 
 	/**
@@ -35,7 +35,7 @@ class Quote extends Plugin{
 	 */
 	_cmdBlockquote(){
 		const Selection = this._editor.selection,
-			cmd = this._editor.cmd,
+			cmd = this._editor.Cmd,
 			range = Selection.getRange(),
 			emptyTagName = this._editor._opts.allowDivTransToP ? 'p' : 'div';
 

@@ -9,18 +9,17 @@ class Button{
 		if(!editor.$toolbar) throw new Error('未发现 toolbar 元素，无法添加按钮！');
 
 		this.$lastWrap = this._insertWrap();
-		this.buttonList = {};
+		this.list = {};
 	}
 
 	/**
 	 * pushButton - 挂载按钮，按照配置顺序统一渲染
 	 * @param {Object} opts 按钮参数，包含title|icon|name|id
-	 *
 	 * @return {type}  description
 	 */
 	pushButton(opts){
 		if(!opts || !opts.name) return this;
-		this.buttonList[opts.name.trim()] = opts;
+		this.list[opts.name.trim()] = opts;
 		return this;
 	}
 
@@ -38,11 +37,11 @@ class Button{
 		}else if(name === '-'){
 			this.$lastWrap = this._insertWrap();
 			return this;
-		}else if(!this.buttonList[name]) {
+		}else if(!this.list[name]) {
 			return this;
 		}
 
-		const $button = this._renderButton(this.buttonList[name]);
+		const $button = this._renderButton(this.list[name]);
 		this.$lastWrap.append($button);
 		return $button;
 	}

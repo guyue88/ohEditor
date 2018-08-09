@@ -59,7 +59,7 @@ class Paragraph extends Plugin{
 	 * @return {type}  description
 	 */
 	resetCmd(){
-		this._editor.cmd._paragraph = this._cmdParagraph;
+		this._editor.Cmd._paragraph = this._cmdParagraph;
 	}
 
 
@@ -71,7 +71,7 @@ class Paragraph extends Plugin{
 	 */
 	_cmdParagraph(value){
 		const Selection = this._editor.selection,
-			cmd = this._editor.cmd,
+			cmd = this._editor.Cmd,
 			range = Selection.getRange(),
 			tagName = value.replace(/[<>]/g,''),
 			emptyTagName = this._editor._opts.allowDivTransToP ? 'p' : 'div';

@@ -343,51 +343,61 @@ class VE {
 		}
 	}
 
+    hasClass(className) {
+        className = className.trim();
+        if (!className) return false;
+        let classList = this.classList();
+        return classList.indexOf(className) === -1 ? false : true;
+    }
+
 	addClass(className) {
+        className = className.trim();
 		if (!className) return this;
 
 		return this.each(elem => {
-			let arr;
-			if (elem.className) {
-
-				arr = elem.className.split(/\s/);
-				arr = arr.filter(item => {
-					return !!item.trim();
-				});
-
-				if (arr.indexOf(className) < 0) {
-					arr.push(className);
-				}
-
-				elem.className = arr.join(' ');
-			} else {
-				elem.className = className;
-			}
+            let classList = this.classList(elem);
+            classList.push(className);
+            classList = Array.from(new Set(classList));
+            elem.className = classList.join(' ');
 		});
 	}
 
+    toggleClass(className){
+        className = className.trim();
+        if (!className) return this;
+
+        if(this.hasClass(className)){
+            this.removeClass(className);
+        }else{
+            this.addClass(className);
+        }
+    }
 
 	removeClass(className) {
+        className = className.trim();
 		if (!className) return this;
 
 		return this.each(elem => {
-			let arr;
-			if (elem.className) {
+            let classList = this.classList(elem);
+            classList = classList.filter(item => {
+                item = item.trim();
 
-				arr = elem.className.split(/\s/)
-				arr = arr.filter(item => {
-					item = item.trim();
+                if (!item || item === className) {
+                    return false;
+                }
+                return true;
+            });
 
-					if (!item || item === className) {
-						return false;
-					}
-					return true;
-				});
-
-				elem.className = arr.join(' ');
-			}
+            elem.className = classList.join(' ');
 		});
-	}
+    }
+    
+    /* Element.classList支持性太低 */
+    classList(elem){
+        elem = elem || this.get(0);
+        const className = elem.className.trim();
+        return Array.from(new Set(className.split(/\s/)));
+    }
 
 	css(key, val) {
 		if(typeof key === 'object'){
