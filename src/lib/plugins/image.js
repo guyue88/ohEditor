@@ -1,6 +1,6 @@
-import { Plugin } from './Plugin';
+import Plugin from './Plugin';
 
-class Image extends Plugin{
+export default class Image extends Plugin{
 	constructor(editor){
 		const id = 'insert-image-' + editor.id;
 		const name = 'insertImage';
@@ -53,4 +53,3 @@ class Image extends Plugin{
 	}
 }
 
-export { Image }

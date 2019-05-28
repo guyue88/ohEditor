@@ -6,19 +6,17 @@ import $ from '../util/dom-core';
 export class Popup{
 	constructor(editor){
 		this._editor = editor;
-		if(!editor.$toolbar) throw new Error('未发现 toolbar 元素，无法添加弹层！');
-
-		this.$wrap = this._insertWrap();
 		this.popupList = [];
+		this.$wrap = void 0;
 	}
 
 	/**
-	 * pushPopup - 挂载弹层，统一渲染
+	 * addPopup - 挂载弹层，统一渲染
 	 *
 	 * @param  {Object} opts 配置
 	 * @return {Popup}      实例
 	 */
-	pushPopup(opts){
+	addPopup(opts){
 		if(!opts || !opts.name) return this;
 		this.popupList.push(opts);
 		return this;
@@ -30,6 +28,9 @@ export class Popup{
 	 * @return {Popup}  实例
 	 */
 	render(){
+		if(!this._editor.$toolbar) throw new Error('未发现 toolbar 元素，无法添加弹层！');
+		this.$wrap = this._insertWrap();
+
 		this.popupList.forEach(item=>{
 			const type = item.type || 'popup';
 			switch (type.trim()) {
@@ -52,7 +53,7 @@ export class Popup{
 	 * _renderDrop - 渲染一个下拉列表
 	 *
 	 * @param  {type} opts description
-	 * @return {type}  description
+	 * @return {Popup}  实例
 	 */
 	_renderDrop(opts){
 		let $div = $(`<div id="oh-drop-${opts.id}" class="oh-layer oh-drop-layer oh-drop-${opts.name}"></div>`);

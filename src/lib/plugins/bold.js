@@ -1,6 +1,6 @@
-import { Plugin } from './Plugin';
+import Plugin from './Plugin';
 
-class Bold extends Plugin{
+export default class Bold extends Plugin{
 	constructor(editor){
 		const _opts = {
 			button: {
@@ -14,5 +14,3 @@ class Bold extends Plugin{
 		super(_opts, editor);
 	}
 }
-
-export { Bold }

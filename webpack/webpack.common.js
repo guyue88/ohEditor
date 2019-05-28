@@ -3,9 +3,11 @@ module.exports = {
     rules: [{
       test: /(\.js)$/,
       exclude: /node_modules/,
-      loader: 'babel-loader',
-      query: {
-        presets: ['es2015']
+      use: {
+        loader: 'babel-loader',
+        options: {
+          presets: ['@babel/preset-env']
+        }
       }
     }, {
       test: /\.scss$/,
@@ -27,13 +29,17 @@ module.exports = {
       }]
     }, {
       test: /\.(png|jpg)$/,
-      loader: 'url-loader',
-      options: {
-        'limit': 40000
+      use: {
+        loader: 'url-loader',
+        options: {
+          'limit': 40000
+        }
       }
     }, {
       test: /\.svg$/,
-      loader: 'svg-inline-loader'
+      use: {
+        loader: 'svg-inline-loader'
+      }
     }]
   }
 };

@@ -1,6 +1,6 @@
-import { Plugin } from './Plugin';
+import Plugin from './Plugin';
 
-class FontFamily extends Plugin{
+export default class FontFamily extends Plugin{
 	constructor(editor){
 		const id = 'font-family-' + editor.id;
 		const name = 'fontFamily';
@@ -49,5 +49,3 @@ class FontFamily extends Plugin{
 
 	}
 }
-
-export { FontFamily }

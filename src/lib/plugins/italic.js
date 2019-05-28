@@ -1,6 +1,6 @@
-import { Plugin } from './Plugin';
+import Plugin from './Plugin';
 
-class Italic extends Plugin{
+export default class Italic extends Plugin{
 	constructor(editor){
 		const id = 'italic-' + editor.id;
 		const name = 'italic';
@@ -16,5 +16,3 @@ class Italic extends Plugin{
 		super(_opts, editor);
 	}
 }
-
-export { Italic }

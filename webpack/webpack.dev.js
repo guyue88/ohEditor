@@ -18,7 +18,7 @@ module.exports = merge(common, {
     umdNamedDefine: true,
   },
   plugins: [
-    new CleanWebpackPlugin(['dist']),
+    new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       inject: 'head',
       template: path.resolve(__dirname, '../example/editor/index.html'),

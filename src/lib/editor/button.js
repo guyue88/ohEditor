@@ -6,19 +6,17 @@ import $ from '../util/dom-core';
 class Button{
 	constructor(editor){
 		this._editor = editor;
-		if(!editor.$toolbar) throw new Error('未发现 toolbar 元素，无法添加按钮！');
-
-		this.$lastWrap = this._insertWrap();
 		this.buttonList = {};
+		this.$lastWrap = void 0;
 	}
 
 	/**
-	 * pushButton - 挂载按钮，按照配置顺序统一渲染
+	 * addButton - 挂载按钮，按照配置顺序统一渲染
 	 * @param {Object} opts 按钮参数，包含title|icon|name|id
 	 *
 	 * @return {type}  description
 	 */
-	pushButton(opts){
+	addButton(opts){
 		if(!opts || !opts.name) return this;
 		this.buttonList[opts.name.trim()] = opts;
 		return this;
@@ -30,6 +28,9 @@ class Button{
 	 * @return {VE}      按钮VE实例
 	 */
 	render(name){
+		if(!this._editor.$toolbar) throw new Error('未发现 toolbar 元素，无法添加按钮！');
+		this.$lastWrap = this._insertWrap();
+
 		name = name.trim();
 
 		if(name === '|'){
@@ -50,6 +51,7 @@ class Button{
 	/**
 	 * _renderButton - 生成一个按钮元素
 	 *
+	 * @private
 	 * @return {$button}  description
 	 */
 	_renderButton(btnOpts){

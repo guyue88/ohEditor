@@ -1,7 +1,7 @@
 /**
  * 插件父类
  */
-class Plugin{
+export default class Plugin{
 	constructor(opts, editor){
 		this.opts = opts;
 		this.editor = editor;
@@ -25,7 +25,7 @@ class Plugin{
 		if(this.editor._opts.toolbar
 			&& this.opts.button
 			&& $.inArray(this.opts.button.name, this.editor._opts.toolbar) !== -1){
-			this.editor.button.pushButton(this.opts.button);
+			this.editor.Button.addButton(this.opts.button);
 		}
 	}
 
@@ -38,9 +38,7 @@ class Plugin{
 		if(this.editor._opts.toolbar 
 			&& this.opts.popup
 			&& $.inArray(this.opts.popup.name, this.editor._opts.toolbar) !== -1){
-			this.editor.popup.pushPopup(this.opts.popup);
+			this.editor.Popup.addPopup(this.opts.popup);
 		}
 	}
 }
-
-export { Plugin };

@@ -1,6 +1,6 @@
-import { Plugin } from './Plugin';
+import Plugin from './Plugin';
 
-class FontSize extends Plugin{
+export default class FontSize extends Plugin{
 	constructor(editor){
 		const id = 'font-size-' + editor.id;
 		const name = 'fontSize';
@@ -57,5 +57,3 @@ class FontSize extends Plugin{
 		this._editor = editor;
 	}
 }
-
-export { FontSize }
