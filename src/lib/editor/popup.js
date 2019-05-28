@@ -6,19 +6,38 @@ import $ from '../util/dom-core';
 export class Popup{
 	constructor(editor){
 		this._editor = editor;
-		this.popupList = [];
+		this._popupList = [];
 		this.$wrap = void 0;
 	}
 
 	/**
 	 * addPopup - 挂载弹层，统一渲染
 	 *
-	 * @param  {Object} opts 配置
+	 * @param  {{
+	 * 	id: string|number,
+	 * 	name: string,
+	 * 	type?: 'popup' | 'drop',
+	 * 	cmd?: string,
+	 * 	dropList: [{
+	 * 		html: string,
+	 * 		text: string,
+	 * 		title?: string,
+	 * 		cmd?: string,
+	 *		param?: string,
+	 * 	}],
+	 * 	tabs: [{
+	 * 		name: string,
+	 *		icon: string,
+	 *		title: string,
+	 *		template: string,
+	 * 	}],
+	 * 	template?: string,
+	 * }} opts 配置
 	 * @return {Popup}      实例
 	 */
 	addPopup(opts){
 		if(!opts || !opts.name) return this;
-		this.popupList.push(opts);
+		this._popupList.push(opts);
 		return this;
 	}
 
@@ -31,7 +50,7 @@ export class Popup{
 		if(!this._editor.$toolbar) throw new Error('未发现 toolbar 元素，无法添加弹层！');
 		this.$wrap = this._insertWrap();
 
-		this.popupList.forEach(item=>{
+		this._popupList.forEach(item=>{
 			const type = item.type || 'popup';
 			switch (type.trim()) {
 				case 'drop':
@@ -43,23 +62,23 @@ export class Popup{
 			}
 		});
 		/*添加弹层显示与关闭的事件*/
-		this._toggleLayer();
+		this._addToggleLayerEvent();
 		/*添加操作弹层tab切换的事件*/
-		this._toggleLayerTab();
+		this._addToggleTabEvent();
 		return this;
 	}
 
 	/**
 	 * _renderDrop - 渲染一个下拉列表
 	 *
+	 * @private
 	 * @param  {type} opts description
 	 * @return {Popup}  实例
 	 */
 	_renderDrop(opts){
-		let $div = $(`<div id="oh-drop-${opts.id}" class="oh-layer oh-drop-layer oh-drop-${opts.name}"></div>`);
-		let $list = this._renderList(opts.dropList, opts.cmd);
+		const list = this._renderList(opts.dropList, opts.cmd);
+		const $div = $(`<div id="oh-drop-${opts.id}" class="oh-layer oh-drop-layer oh-drop-${opts.name}">${list}</div>`);
 
-		$div.append($list);
 		this.$wrap.append($div);
 
 		let $related = this._editor.$toolbar.find(`#oh-btn-${opts.id}`);
@@ -79,39 +98,38 @@ export class Popup{
 	/**
 	 * _renderList - 渲染下拉列表内容
 	 *
+	 * @private
 	 * @param  {array} list description
 	 * @param  {string} cmd 命令
-	 * @return {VE}      description
+	 * @return {string} DOM string
 	 */
-	_renderList(list, cmd){
-		let $ul = $('<ul class="oh-drop-list"></ul>');
-		list.forEach(item=>{
-			let $li = $(`<li>
-				<a href="javascript:;" data-cmd="${cmd}" data-param="${item.param}" title="${item.title||item.text}">
+	_renderList(list, cmd) {
+		const li = list.map(item=>{
+			return `<li>
+				<a href="javascript:;" data-cmd="${item.cmd || cmd}" data-param="${item.param}" title="${item.title||item.text}">
 					${item.html||item.text}
 				</a>
-			</li>`);
-			$ul.append($li);
+			</li>`;
 		});
-		return $ul;
+		return `<ul class="oh-drop-list">${li.join('')}</ul>`;
 	}
 
 	/**
 	 * _renderPopup - 渲染一个操作弹层
 	 *
+	 * @private
 	 * @param  {type} opts description
-	 * @return {Popup}      description
+	 * @return {Popup} 实例
 	 */
-	_renderPopup(opts){
-		let $div = $(`<div id="oh-popup-${opts.id}" class="oh-layer oh-popup-layer oh-popup-${opts.name}"></div>`);
-
-		if(opts.tabs && Array.isArray(opts.tabs)){
-			$div.append(this._renderLayerTabs(opts.tabs));
-			$div.append(this._renderLayerCont(opts.tabs));
-		}else{
-			$div.append(this._renderLayerCont(opts.template));
+	_renderPopup(opts) {
+		const children = [];
+		if(opts.tabs && Array.isArray(opts.tabs)) {
+			children.push(this._renderLayerTabs(opts.tabs));
+			children.push(this._renderLayerCont(opts.tabs));
+		} else {
+			children.push(this._renderLayerCont(opts.template));
 		}
-
+		const $div = $(`<div id="oh-popup-${opts.id}" class="oh-layer oh-popup-layer oh-popup-${opts.name}">${children.join('')}</div>`)
 		this.$wrap.append($div);
 
 		let $related = this._editor.$toolbar.find(`#oh-btn-${opts.id}`);
@@ -132,64 +150,58 @@ export class Popup{
 	/**
 	 * _renderLayerTabs - 生成操作弹层按钮
 	 *
+	 * @private
 	 * @param  {type} tabs description
-	 * @return {VN}      description
+	 * @return {string} DOM string
 	 */
 	_renderLayerTabs(tabs){
-		let $ul = $('<ul class="clearfix oh-popup-tab"></ul>');
-
-		tabs.forEach((item, index)=>{
-			let $li = $('<li></li>');
-			let $button = this._renderLayerButton(item);
-			index === 0 && $li.addClass('oh-active');
-			$li.append($button);
-			$ul.append($li);
+		const li = tabs.map((item, index)=>{
+			const button = this._renderLayerButton(item);
+			return `<li${index === 0 ? ' class="oh-active"' : ''}>${button}</li>`;
 		});
-		return $ul;
+		return `<ul class="clearfix oh-popup-tab">${li.join('')}</ul>`;
 	}
 
 	/**
 	 * _renderLayerCont - 生成操作弹层的内容
 	 *
+	 * @private
 	 * @param  {string|Array} template description
-	 * @return {VE}          description
+	 * @return {string} DOM string
 	 */
 	_renderLayerCont(template){
-		let $div = $('<div class="oh-popup-cont"></div>');
-
+		let tpls = [];
 		if(Array.isArray(template)){
-			template.forEach((item, index)=>{
-				let $child = $(`<div class="oh-popup-child oh-popup-child-${item.name}"></div>`);
-
-				index === 0 && $child.addClass('oh-active');
-				$child.html(item.template);
-				$div.append($child);
+			tpls = template.map((item, index)=>{
+				return `<div class="oh-popup-child oh-popup-child-${item.name}${index === 0 ? ' oh-active' : ''}">${item.template}</div>`
 			});
 		}else{
-			$div.html(item.template);
+			tpls.push(item.template);
 		}
-		return $div;
+		return `<div class="oh-popup-cont">${tpls.join('')}</div>`;
 	}
 
 	/**
 	 * _renderLayerButton - 生成一个操作弹层内的按钮元素
 	 *
-	 * @return {$button}  description
+	 * @private
+	 * @return {string}  DOM string
 	 */
 	_renderLayerButton(bntOpts){
-		let $button = $('<button type="button" class="oh-menu"></button>');
-		let $icon = $(`<span class="fa fa-${bntOpts.icon}"></span>`);
-
-		bntOpts.id && $button.attr('id', `oh-${bntOpts.id}`);
-		bntOpts.title && $button.attr('title', bntOpts.title);
-
-		$button.append($icon);
-		return $button;
+		const icon = `<span class="fa fa-${bntOpts.icon}"></span>`;
+		const button = `<button
+				type="button"
+				class="oh-menu"
+				${bntOpts.id ? ' id=oh-' + bntOpts.id : ''}
+				${bntOpts.title ? ' title=' + bntOpts.title : ''}
+			>${icon}</button>`;
+		return button;
 	}
 
 	/**
 	 * _insertWrap - 插入弹层父容器
 	 *
+	 * @private
 	 * @return {VE}  element
 	 */
 	_insertWrap(){
@@ -200,11 +212,12 @@ export class Popup{
 	}
 
 	/**
-	 * _toggleLayerTab - 操作弹层内的tab切换
+	 * _addToggleTabEvent - 操作弹层内的tab切换
 	 *
+	 * @private
 	 * @return {type}      description
 	 */
-	_toggleLayerTab(){
+	_addToggleTabEvent(){
 		const $layer = this._editor.$toolbar.find('.oh-popup-layer');
 		$layer.on('click', '.oh-popup-tab li', function(e){
 			let me = $(this),
@@ -223,11 +236,12 @@ export class Popup{
 	}
 
 	/**
-	 * _toggleLayer - 弹层的关闭与显示控制
+	 * _addToggleLayerEvent - 弹层的关闭与显示控制
 	 *
+	 * @private
 	 * @return {type}      description
 	 */
-	_toggleLayer($btn){
+	_addToggleLayerEvent($btn){
 		const self = this;
 		const $layer = this._editor.$toolbar.find('.oh-layer');
 
