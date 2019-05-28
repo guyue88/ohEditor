@@ -10,7 +10,7 @@ import './assets/scss/style.scss';
 import './assets/scss/content.scss';
 
 /*编辑器编号*/
-let ID = 1;
+let id = 1;
 
 /*toolbar: [
 	'paragraph', 'quote', 'fontFamily', 'fontSize', 'bold', 'italic', 'color',
@@ -18,8 +18,8 @@ let ID = 1;
 	'insertImage', 'insertVideo', 'insertFile', 'insertTable', '|', 'insertHR',
 	'clearFormatting', 'print', 'help', 'html', '|', 'undo', 'redo', 'fullscreen'
 ],*/
-class OhEditor {
-	constructor(elementID, opts) {
+export default class OhEditor {
+	constructor(elementId, opts) {
 		const _opts = {
 			toolbar: [
 				'paragraph', 'quote', 'fontFamily', 'fontSize', 'bold', 'italic', 'insertImage'
@@ -30,11 +30,11 @@ class OhEditor {
 			allowDivTransToP: true
 		};
 
-		this.id = ID;
-		ID++;
+		this.id = id;
+		id++;
 
 		this._opts = Object.assign({}, _opts, opts);
-		this.$editor = $('#'+elementID);
+		this.$editor = $('#'+elementId);
 		this.$wrap = void 0;
 		this.$toolbar = void 0;
 		this.$container = void 0;
@@ -262,5 +262,3 @@ class OhEditor {
 		});
 	}
 }
-
-export { OhEditor };
