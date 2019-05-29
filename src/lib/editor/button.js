@@ -6,53 +6,49 @@ import $ from '../util/dom-core';
 class Button{
 	constructor(editor){
 		this._editor = editor;
-		this.buttonList = {};
-		this.$lastWrap = void 0;
+		this._buttonList = {};
+		this._$lastWrap = void 0;
 	}
 
 	/**
 	 * addButton - 挂载按钮，按照配置顺序统一渲染
+	 * 
 	 * @param {Object} opts 按钮参数，包含title|icon|name|id
-	 *
 	 * @return {type}  description
 	 */
 	addButton(opts){
 		if(!opts || !opts.name) return this;
-		this.buttonList[opts.name.trim()] = opts;
+		this._buttonList[opts.name.trim()] = opts;
 		return this;
 	}
 
 	/**
 	 * 渲染单个按钮到控制栏
 	 * @param  {string} name [按钮名]
-	 * @return {VE}      按钮VE实例
+	 * @return {undefined|element} 按钮VE实例
 	 */
 	render(name){
-		if(!this._editor.$toolbar) throw new Error('未发现 toolbar 元素，无法添加按钮！');
-		this.$lastWrap = this._insertWrap();
+		if (!this._editor.$toolbar) throw new Error('未发现 toolbar 元素，无法添加按钮！');
+		if (!this._$lastWrap) this._$lastWrap = this._insertWrap();
 
 		name = name.trim();
 
-		if(name === '|'){
+		if(name === '|') {
 			this._split();
-			return this;
-		}else if(name === '-'){
-			this.$lastWrap = this._insertWrap();
-			return this;
-		}else if(!this.buttonList[name]) {
-			return this;
+		} else if (name === '-') {
+			this._$lastWrap = this._insertWrap();
+		} else if (this._buttonList[name]) {
+			const $button = this._renderButton(this._buttonList[name]);
+			this._$lastWrap.append($button);
+			return $button;
 		}
-
-		const $button = this._renderButton(this.buttonList[name]);
-		this.$lastWrap.append($button);
-		return $button;
 	}
 
 	/**
 	 * _renderButton - 生成一个按钮元素
 	 *
 	 * @private
-	 * @return {$button}  description
+	 * @return {$button} description
 	 */
 	_renderButton(btnOpts){
 		let $button = $(`
@@ -79,7 +75,9 @@ class Button{
 
 	/**
 	 * 内置，插入新容器以换行
-	 * @return {element}      最后面的容器
+	 * 
+	 * @private
+	 * @return {element} 最后面的容器
 	 */
 	_insertWrap(){
 		let $div = $('<div class="clearfix oh-button-wrap"></div>');
@@ -90,11 +88,11 @@ class Button{
 
 	/**
 	 * 内置，分隔符
-	 * @return {Button}      实例
+	 * @return {Button} 实例
 	 */
 	_split(){
 		let $span = $('<span class="oh-split"></span>');
-		this.$lastWrap.append($span);
+		this._$lastWrap.append($span);
 		return $span;
 	}
 }

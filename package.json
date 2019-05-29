@@ -5,8 +5,8 @@
   "main": "dist/editor.js",
   "scripts": {
     "start": "npm run dev",
-    "dev": "cross-env NODE_ENV=development webpack-dev-server --config webpack/webpack.dev.js --hot --inline",
-    "build": "cross-env NODE_ENV=production webpack --config webpack/webpack.prod.js",
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --config webpack/dev.config.js --watch --inline",
+    "build": "cross-env NODE_ENV=production webpack --config webpack/prod.config.js",
     "server": "node example/server/upload.js",
     "test": "npm test"
   },

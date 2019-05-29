@@ -17,9 +17,6 @@
 
 		content: ' ';
 	}
-	.clearfix{
-		display: inline-block;
-	}
 }
 .oh-toolbar{
 	position: relative;
@@ -91,11 +88,13 @@
 		.oh-split{
 			background: #ebebeb;
 			display: block;
-			vertical-align: top;
 			float: left;
 			height: 34px;
 			width: 1px;
 			margin: 2px;
+		}
+		& + .oh-button-wrap{
+			border-top: 1px solid #ccc;
 		}
 	}
 
@@ -261,7 +260,12 @@
 					background-color: #ebebeb;
 				}
 			}
-
+			h1 {
+				font-size: 26px;
+			}
+			h2 {
+				font-size: 22px;
+			}
 		}
 
 	}

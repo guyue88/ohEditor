@@ -3,8 +3,8 @@
  */
 export default class Plugin{
 	constructor(opts, editor){
-		this.opts = opts;
-		this.editor = editor;
+		this._opts = opts;
+		this._editor = editor;
 		this.init();
 	}
 
@@ -22,10 +22,10 @@ export default class Plugin{
 	 * @return {[type]} [description]
 	 */
 	mountButton(){
-		if(this.editor._opts.toolbar
-			&& this.opts.button
-			&& $.inArray(this.opts.button.name, this.editor._opts.toolbar) !== -1){
-			this.editor.Button.addButton(this.opts.button);
+		if(this._editor._opts.toolbar
+			&& this._opts.button
+			&& $.inArray(this._opts.button.name, this._editor._opts.toolbar) !== -1){
+			this._editor.Button.addButton(this._opts.button);
 		}
 	}
 
@@ -35,10 +35,10 @@ export default class Plugin{
 	 * @return {type}  description
 	 */
 	mountPopup(){
-		if(this.editor._opts.toolbar 
-			&& this.opts.popup
-			&& $.inArray(this.opts.popup.name, this.editor._opts.toolbar) !== -1){
-			this.editor.Popup.addPopup(this.opts.popup);
+		if(this._editor._opts.toolbar 
+			&& this._opts.popup
+			&& $.inArray(this._opts.popup.name, this._editor._opts.toolbar) !== -1){
+			this._editor.Popup.addPopup(this._opts.popup);
 		}
 	}
 }

@@ -7,7 +7,7 @@ export class Popup{
 	constructor(editor){
 		this._editor = editor;
 		this._popupList = [];
-		this.$wrap = void 0;
+		this._$wrap = void 0;
 	}
 
 	/**
@@ -48,7 +48,7 @@ export class Popup{
 	 */
 	render(){
 		if(!this._editor.$toolbar) throw new Error('未发现 toolbar 元素，无法添加弹层！');
-		this.$wrap = this._insertWrap();
+		this._$wrap = this._insertWrap();
 
 		this._popupList.forEach(item=>{
 			const type = item.type || 'popup';
@@ -79,7 +79,7 @@ export class Popup{
 		const list = this._renderList(opts.dropList, opts.cmd);
 		const $div = $(`<div id="oh-drop-${opts.id}" class="oh-layer oh-drop-layer oh-drop-${opts.name}">${list}</div>`);
 
-		this.$wrap.append($div);
+		this._$wrap.append($div);
 
 		let $related = this._editor.$toolbar.find(`#oh-btn-${opts.id}`);
 		let relatedOffset = $related.offset();
@@ -130,7 +130,7 @@ export class Popup{
 			children.push(this._renderLayerCont(opts.template));
 		}
 		const $div = $(`<div id="oh-popup-${opts.id}" class="oh-layer oh-popup-layer oh-popup-${opts.name}">${children.join('')}</div>`)
-		this.$wrap.append($div);
+		this._$wrap.append($div);
 
 		let $related = this._editor.$toolbar.find(`#oh-btn-${opts.id}`);
 		let relatedOffset = $related.offset();

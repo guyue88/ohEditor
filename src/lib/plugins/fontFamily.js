@@ -6,32 +6,35 @@ export default class FontFamily extends Plugin{
 		const name = 'fontFamily';
 		const _opts = {
 			button: {
+				id,
+				name,
 				title: '选择字体',
 				icon: 'font',
-				name: name,
-				id: id,
 				type: 'drop'
 			},
 			popup: {
-				id: id,
-				name: name,
+				id,
+				name,
 				type: 'drop',
-				cmd: 'fontFamily',
+				cmd: 'fontName',
 				dropList: [{
-					html: '<span style="font-family: \'Microsoft Yahei\'">微软雅黑</span>',
-					param: 'Microsoft Yahei'
-				},{
-					html: '<span style="font-family: SimSun">宋体</span>',
-					param: 'SimSun'
-				},{
-					html: '<span style="font-family: Arial">Arial</span>',
-					param: 'Arial'
-				},{
-					html: '<span style="font-family: Helvetica">Helvetica</span>',
-					param: 'Helvetica'
-				},{
-					html: '<span style="font-family: Tahoma">Tahoma</span>',
-					param: 'Tahoma'
+					html: '<span style="font-family: \'Microsoft Yahei\', \'微软雅黑\'">微软雅黑</span>',
+					param: '\'Microsoft Yahei\', \'微软雅黑\''
+				}, {
+					html: '<span style="font-family: STSong, \'华文宋体\'">华文宋体</span>',
+					param: 'STSong, \'华文宋体\''
+				}, {
+					html: '<span style="font-family: Arial,Helvetica,sans-serif">Arial</span>',
+					param: 'Arial,Helvetica,sans-serif'
+				}, {
+					html: '<span style="font-family: Impact, Charcoal, sans-serif">Impact</span>',
+					param: 'Impact'
+				}, {
+					html: '<span style="font-family: Tahoma, Geneva, sans-serif">Tahoma</span>',
+					param: 'Tahoma, Geneva, sans-serif'
+				}, {
+					html: '<span style="font-family: Times New Roman,Times,serif,-webkit-standard">Times New Roman</span>',
+					param: 'Times New Roman,Times,serif,-webkit-standard'
 				}]
 			}
 		};

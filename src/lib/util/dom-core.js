@@ -135,7 +135,7 @@ class VE {
 		this.each(elem => {
 			cloneList.push(elem.cloneNode(!!deep));
 		});
-		return new VE(cloneList);
+		return $(cloneList);
 	}
 
 	size(){
@@ -157,7 +157,7 @@ class VE {
 
 	eq(index){
 		if(index === void 0) return this;
-		return new VE(this.get(index));
+		return $(this.get(index));
 	}
 
 	attr(key, val) {
@@ -168,7 +168,11 @@ class VE {
 				elem.setAttribute(key, val);
 			});
 		}
-		return this;
+	}
+
+	children() {
+		const elem = this.get(0);
+		return $(elem.children);
 	}
 
 	on(type, selector, fn){
@@ -237,70 +241,70 @@ class VE {
 
 	}
 
-	siblings( selector ) {
+	siblings(selector) {
 		let result = [];
-		this.each(elem=>{
+		this.each(elem => {
 			result = result.concat( sibling( ( elem.parentNode || {} ).firstChild, elem ) );
 		});
 
-		return new VE(result).filter(selector);
+		return $(result).filter(selector);
 	}
 
-	next( selector ) {
+	next(selector) {
 		let result = [];
-		this.each(elem=>{
+		this.each(elem => {
 			result = result.concat( elem.nextSibling );
 		});
 
-		return new VE(result).filter(selector);
+		return $(result).filter(selector);
 	}
 
-	prev( selector ) {
+	prev(selector) {
 		let result = [];
-		this.each(elem=>{
+		this.each(elem => {
 			result = result.concat( elem.previousSibling );
 		});
 
-		return new VE(result).filter(selector);
+		return $(result).filter(selector);
 	}
 
-	nextAll( selector ) {
+	nextAll(selector) {
 		let result = [];
-		this.each(elem=>{
+		this.each(elem => {
 			result = result.concat( dir( elem, "nextSibling" ) );
 		});
 
-		return new VE(result).filter(selector);
+		return $(result).filter(selector);
 	}
 
-	prevAll( selector ) {
+	prevAll(selector) {
 		let result = [];
-		this.each(elem=>{
+		this.each(elem => {
 			result = result.concat( dir( elem, "previousSibling" ) );
 		});
 
-		return new VE(result).filter(selector);
+		return $(result).filter(selector);
 	}
 
-	parent( selector ) {
+	parent(selector) {
 		let result = [];
-		this.each(elem=>{
+		this.each(elem => {
 			let parent = elem.parentNode;
 			if(parent && parent.nodeType !== 11){
 				result = result.concat( parent );
 			}
 		});
 
-		return new VE(result).filter(selector);
+		return $(result).filter(selector);
 	}
 
-	parents( selector ) {
+	parents(selector) {
 		let result = [];
-		this.each(elem=>{
+		this.each(elem => {
 			result = result.concat( dir( elem, "parentNode" ) );
 		});
 
-		return new VE(result).filter(selector);
+		return $(result).filter(selector);
 	}
 
 	/**
@@ -313,24 +317,24 @@ class VE {
 		if(!selector) return this;
 		let result = [];
 		if(selector instanceof VE){
-			this.each(elem=>{
+			this.each(elem => {
 				selector.each(preElem=>{
 					elem === preElem && result.push(elem);
 				});
 			});
 		}else if(selector.nodeType === 1){
-			this.each(elem=>{
+			this.each(elem => {
 				elem === selector && result.push(elem);
 			});
 		}else if(typeof selector === 'string'){
-			this.each(elem=>{
+			this.each(elem => {
 				elem.matches(selector) && result.push(elem);
 			});
 		}
-		return new VE(result);
+		return $(result);
 	}
 
-	index( selector ) {
+	index(selector) {
 
 		// No argument, return index in parent
 		if ( !selector ) {
@@ -339,7 +343,7 @@ class VE {
 
 		// index in selector
 		if ( typeof selector === "string" ) {
-			return [].indexOf.call( new VE( selector ), this[ 0 ] );
+			return [].indexOf.call( $(selector), this[ 0 ] );
 		}
 	}
 
@@ -390,7 +394,7 @@ class VE {
 	}
 
 	css(key, val) {
-		if(typeof key === 'object'){
+		if (typeof key === 'object') {
 			/*json格式*/
 			return this.each(elem => {
 				for(let name in key){
@@ -398,15 +402,15 @@ class VE {
 					elem.style[styleName] = key[name];
 				}
 			});
-		}else if(!val){
+		} else if (!val=== undefined){
 			const styleName = formatStyleName(key);
 			const elem = this.get(0);
 			if(elem){
 				let style = document.defaultView.getComputedStyle(elem, null);
-				return style[styleName];
+				return styleName ? style[styleName] : style;
 			}
 			return '';
-		}else if(typeof key === 'string'){
+		} else if (typeof key === 'string') {
 			const styleName = formatStyleName(key);
 			return this.each(elem => {
 				elem.style[styleName] = val;
@@ -473,11 +477,11 @@ class VE {
 
 	find(selector) {
 		let result = [];
-		this.each(elem=>{
+		this.each(elem => {
 			result = result.concat(querySelectorAll(selector, [elem]));
 		});
 
-		return new VE(result);
+		return $(result);
 	}
 
 	/*获取当前元素的 text*/
@@ -521,7 +525,7 @@ class VE {
 		if(!val){
 			return this.get(0).dataset[key];
 		}else{
-			return this.each(elem=>{
+			return this.each(elem => {
 				elem.dataset[key] = val;
 			});
 		}

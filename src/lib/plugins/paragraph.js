@@ -49,16 +49,15 @@ export default class Paragraph extends Plugin{
 			}
 		};
 		super(_opts, editor);
-		this._editor = editor;
-		this.resetCmd();
+		this._resetCmd();
 	}
 
 	/**
-	 * resetCmd - 重置blockquote命令
+	 * _resetCmd - 重置blockquote命令
 	 *
 	 * @return {type}  description
 	 */
-	resetCmd(){
+	_resetCmd(){
 		this._editor.Cmd._paragraph = this._cmdParagraph;
 	}
 
@@ -70,29 +69,29 @@ export default class Paragraph extends Plugin{
 	 * @return {type}       description
 	 */
 	_cmdParagraph(value){
-		const Selection = this._editor.selection,
+		const selection = this._editor.Selection,
 			cmd = this._editor.Cmd,
-			range = Selection.getRange(),
-			tagName = value.replace(/[<>]/g,''),
-			emptyTagName = this._editor._opts.allowDivTransToP ? 'p' : 'div';
+			range = selection.getRange(),
+			tagName = value.replace(/[<>]/g,'').toLowerCase(),
+			blockName = this._editor._opts.allowDivTransToP ? 'p' : 'div';
 
-		if(range){
+		if (range) {
 			const parent = range.commonAncestorContainer.parentNode;
-			if(
-				parent.nodeType === 1 &&
-				(
-					parent.nodeName.toLowerCase() === tagName.toLowerCase() ||
-					tagName.toLowerCase() === 'normal'
-				)
-			){
+			const nodeName = parent.nodeName.toLowerCase();
+			const headingList = ['h1', 'h2', 'h3', 'h4', 'h5',' h6'];
+			
+			if(parent.nodeType === 1 && (
+					nodeName === tagName ||
+					(tagName.toLowerCase() === 'normal' && headingList.includes(nodeName))
+			)) {
 				/*取消段落*/
 				const $parent = $(parent),
 					html = $parent.html();
-				$parent.after(`<${emptyTagName}>${html}</${emptyTagName}>`).remove();
-			}else{
+				$parent.after(`<${blockName}>${html}</${blockName}>`).remove();
+			} else if (headingList.includes(tagName)) {
 				cmd.do('formatBlock', value);
 			}
-		}else{
+		} else if (headingList.includes(tagName)) {
 			cmd.do('formatBlock', value);
 		}
 	}

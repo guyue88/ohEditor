@@ -15,16 +15,15 @@ export default class Quote extends Plugin{
 			}
 		};
 		super(_opts, editor);
-		this._editor = editor;
-		this.resetCmd();
+		this._resetCmd();
 	}
 
 	/**
-	 * resetCmd - 重置blockquote命令
+	 * _resetCmd - 重置blockquote命令
 	 *
 	 * @return {type}  description
 	 */
-	resetCmd(){
+	_resetCmd(){
 		this._editor.Cmd._blockquote = this._cmdBlockquote;
 	}
 
@@ -34,22 +33,22 @@ export default class Quote extends Plugin{
 	 * @return {type}  description
 	 */
 	_cmdBlockquote(){
-		const Selection = this._editor.selection,
+		const selection = this._editor.Selection,
 			cmd = this._editor.Cmd,
-			range = Selection.getRange(),
-			emptyTagName = this._editor._opts.allowDivTransToP ? 'p' : 'div';
+			range = selection.getRange(),
+			blockName = this._editor._opts.allowDivTransToP ? 'p' : 'div';
 
-		if(range){
+		if(range) {
 			const parent = range.commonAncestorContainer.parentNode;
-			if(parent.nodeType === 1 && parent.nodeName.toLowerCase() === "blockquote"){
-				/*取消引用*/
+			/*取消引用*/
+			if (parent.nodeType === 1 && parent.nodeName.toLowerCase() === "blockquote") {
 				const $parent = $(parent),
 					html = $parent.html();
-				$parent.after(`<${emptyTagName}>${html}</${emptyTagName}>`).remove();
-			}else{
+				$parent.after(`<${blockName}>${html}</${blockName}>`).remove();
+			} else {
 				cmd.do('formatBlock', 'BLOCKQUOTE');
 			}
-		}else{
+		} else {
 			cmd.do('formatBlock', 'BLOCKQUOTE');
 		}
 	}

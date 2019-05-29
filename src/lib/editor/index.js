@@ -20,12 +20,13 @@ export default class OhEditor {
 	constructor(elemId, opts) {
 		const _opts = {
 			toolbar: [
-				'paragraph', 'quote', 'fontFamily', 'fontSize', 'bold', 'italic', 'insertImage'
+				'paragraph', 'quote', 'fontFamily', 'fontSize', '-', 'bold', 'italic', '|', 'insertImage',
 			],
 			minHeight: '300px',
 			minWidth: '100%',
 			initialContent: '欢迎使用ohEditor!',
-			allowDivTransToP: true
+			allowDivTransToP: true,
+			useStyleWithCSS: true,
 		};
 
 		this.id = id;
@@ -33,6 +34,14 @@ export default class OhEditor {
 
 		this._opts = {..._opts, opts};
 		this.$editor = $('#'+elemId);
+		this._init();
+	}
+
+	/**
+	 * 初始化操作
+	 *
+	 */
+	_init() {
 		this.$wrap = void 0;
 		this.$toolbar = void 0;
 		this.$container = void 0;
@@ -44,6 +53,9 @@ export default class OhEditor {
 		this.Cmd = new Command(this);
 		/*selection实例*/
 		this.Selection = new Selection();
+		if (this._opts.useStyleWithCSS) {
+			this.Cmd.do('styleWithCSS', true);
+		}
 	}
 
 	/**
@@ -207,7 +219,7 @@ export default class OhEditor {
 				cmd = me.data('cmd'),
 				param = me.data('param');
 
-			cmd && self.cmd.do(cmd, param);
+			cmd && self.Cmd.do(cmd, param);
 		});
 	}
 
@@ -219,7 +231,7 @@ export default class OhEditor {
 	 */
 	_bindEvent(){
 		const self = this,
-			emptyElem = this._opts.allowDivTransToP ? '<p><br/></p>' : '<div><br/></div>';
+			blockElem = this._opts.allowDivTransToP ? '<p><br/></p>' : '<div><br/></div>';
 
 		if(this._opts.allowDivTransToP){
 			let timer = void 0;
@@ -229,7 +241,7 @@ export default class OhEditor {
 					/*删除，全部内容删除后需要填充一个空的p*/
 					if(e.keyCode === 8){
 						if(!self.html()){
-							self.$container.prepend(emptyElem);
+							self.$container.prepend(blockElem);
 						}
 					}
 				}, 200);
@@ -243,18 +255,18 @@ export default class OhEditor {
 		const blockTag = ['blockquote'];
 		this.$container.on('keydown', function(e){
 			if(e.keyCode === 13){
-				const range = self.selection.getRange(),
+				const range = self.Selection.getRange(),
 					parent = range.commonAncestorContainer.parentNode,
 					tagName = parent.nodeType === 1 ? parent.nodeName.toLowerCase() : '';
 
 				if(blockTag.indexOf(tagName) !== -1){
 					e.preventDefault();
-					const $ele = $(emptyElem);
+					const $ele = $(blockElem);
 					$(parent).after($ele);
-					self.selection.resetRange($ele[0], 0, $ele[0], 0);
+					self.Selection.resetRange($ele[0], 0, $ele[0], 0);
 				}
 			}
-
 		});
+
 	}
 }

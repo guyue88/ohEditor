@@ -3,7 +3,6 @@
  */
 export class Command{
 	constructor(editor){
-		console.log(editor);
 		this._editor = editor;
 	}
 
@@ -14,18 +13,18 @@ export class Command{
 	 * @param  {string} value 需要设置的值
 	 * @return {type}       description
 	 */
-	do(name, value) {
+	do(name, value, showDefaultUI = false) {
 		/*如果有自定函数，则执行，否则执行默认事件*/
 		const _name = `_${name}`;
 		if (this[_name]) {
 			this[_name](value)
 		} else {
-			this._execCommand(name, value)
+			this._execCommand(name, value, showDefaultUI)
 		}
 	}
 
-	_execCommand(name, value) {
-		return document.execCommand(name, false, value);
+	_execCommand(name, value, showDefaultUI = false) {
+		return document.execCommand(name, showDefaultUI, value);
 	}
 
 	queryCommandValue(name) {
