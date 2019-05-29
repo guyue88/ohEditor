@@ -4,8 +4,8 @@ import { Command } from './command';
 import { Selection } from './selection';
 import $ from '../util/dom-core';
 
-import '../../assets/scss/style.scss';
-import '../../assets/scss/content.scss';
+import '../scss/style.scss';
+import '../scss/content.scss';
 
 /*编辑器编号*/
 let id = 1;
