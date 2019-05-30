@@ -27,6 +27,12 @@ export default class OhEditor {
 			initialContent: '欢迎使用ohEditor!',
 			allowDivTransToP: true,
 			useStyleWithCSS: true,
+			insertImage: {
+				target: 'http://localhost:9090/upload',
+				uploadKey: 'image',
+				useBase64: true,
+				maxBase64Size: 20000,
+			}
 		};
 
 		this.id = id;
@@ -42,6 +48,8 @@ export default class OhEditor {
 	 *
 	 */
 	_init() {
+		this.isReady = false;
+		this._readyWatchList = [];
 		this.$wrap = void 0;
 		this.$toolbar = void 0;
 		this.$container = void 0;
@@ -67,15 +75,36 @@ export default class OhEditor {
 		this.refresh();
 		this._bindCmd();
 		this._bindEvent();
+		// this.$container.get(0).focus();
+		this.isReady = true;
+		while (this._readyWatchList.length) {
+			const fn = this._readyWatchList.shift();
+			fn(this);
+		}
 		return this;
 	}
 
 	/**
-	 * html - 获取编辑区源代码
+	 * 编辑器已经准备好，可以对编辑器进行操作
+	 *
+	 * @param {function} callback 回调
+	 * @memberof OhEditor
+	 */
+	ready(callback) {
+		if (this.isReady) {
+			callback && callback(this);
+		} else {
+			this._readyWatchList.push(callback);
+		}
+		return this;
+	}
+
+	/**
+	 * 获取编辑区源代码
 	 *
 	 * @return {string}  编辑区源代码
 	 */
-	html(){
+	get html(){
 		return this.$container && this.$container.html();
 	}
 

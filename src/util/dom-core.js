@@ -94,23 +94,26 @@ class VE {
 			} else {
 				/*选择器，scope必须是VE或者字符串*/
 				if(scope){
-					if(typeof scope === 'string'){
+					if (typeof scope === 'string') {
 						result = querySelectorAll(selector, querySelectorAll(scope));
-					}else if(scope instanceof VE){
+					} else if (scope instanceof VE) {
 						result = querySelectorAll(selector, scope);
-					}else{
+					} else {
 						result = [];
 					}
-				}else{
+				} else {
 					result = querySelectorAll(selector);
 				}
 			}
+		} else {
+			/* 不是选择器也不dom结构，可能只是为了使用事件机制的其他对象 */
+			result = [selector];
 		}
 
 		const length = result.length;
 		if (!length) return this;
 
-		// 加入 DOM 节点
+		/* 加入 DOM 节点 */
 		let i;
 		for (i = 0; i < length; i++) {
 			this[i] = result[i];
@@ -175,7 +178,7 @@ class VE {
 		return $(elem.children);
 	}
 
-	on(type, selector, fn){
+	on(type, selector, fn, options = {}){
 		/*没有传selector， 则不用代理*/
 		if(!fn){
 			fn = selector;
@@ -184,9 +187,15 @@ class VE {
 
 		/*可能有多个事件*/
 		let types = type.split(/\s+/);
-
+		const opts = {
+			once: false, 
+			capture: false,
+			passive: false,
+			...options,
+		};
 		return this.each(elem => {
 			types.forEach(type => {
+				type = type.trim();
 				if (!type) return;
 
 				/*记录事件*/
@@ -198,7 +207,7 @@ class VE {
 
 				if (!selector) {
 					/*无代理*/
-					elem.addEventListener(type, function(e){
+					elem.addEventListener(type, function(e) {
 						let res = fn.call(this, e);
 						if(res === false){
 							e.preventDefault;
@@ -206,38 +215,40 @@ class VE {
 							e.stopPropagation();
 							e.cancelBubble = true;
 						}
-					});
-					return;
-				}
+					}, opts);
+				} else {
+					/*有代理*/
+					elem.addEventListener(type, function(e) {
+						let target = e.target;
+						const currentTarget = e.currentTarget;
+						/*遍历外层并且匹配*/
+						while (target !== currentTarget) {
+							/*判断是否匹配到我们所需要的元素上*/
+							if (target.matches(selector)) {
+								/*执行绑定的函数*/
+								let res = fn.call(target, e);
 
-				/*有代理*/
-				elem.addEventListener(type, e => {
-					let target = e.target;
-					const currentTarget = e.currentTarget;
-					/*遍历外层并且匹配*/
-					while (target !== currentTarget) {
-						/*判断是否匹配到我们所需要的元素上*/
-						if (target.matches(selector)) {
-							/*执行绑定的函数*/
-							let res = fn.call(target, e);
-
-							if(res === false){
-								e.preventDefault;
-								e.returnValue = false;
-								e.stopPropagation();
-								e.cancelBubble = true;
+								if(res === false){
+									e.preventDefault;
+									e.returnValue = false;
+									e.stopPropagation();
+									e.cancelBubble = true;
+								}
+								break;
 							}
-							break;
+							target = target.parentNode;
 						}
-						target = target.parentNode;
-					}
-
-				});
+					}, opts);
+				}
 			});
 		});
 	}
 
-	off(){
+	once(type, selector, fn) {
+		return this.on(type, selector, fn, {once: true});
+	}
+
+	off() {
 
 	}
 

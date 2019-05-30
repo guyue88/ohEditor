@@ -69,7 +69,27 @@ export class Popup{
 	}
 
 	/**
-	 * _renderDrop - 渲染一个下拉列表
+	 * 获取某个插件对应的弹层
+	 *
+	 * @param {string} name
+	 * @returns
+	 */
+	getPopupLayer(name) {
+		return this._$wrap.find(`.oh-popup-${name.trim()}`);
+	}
+
+	/**
+	 * 获取某个插件对应的下拉弹层
+	 *
+	 * @param {string} name
+	 * @returns
+	 */
+	getDropLayer(name) {
+		return this._$wrap.find(`.oh-drop-${name.trim()}`);
+	}
+
+	/**
+	 * 渲染一个下拉列表
 	 *
 	 * @private
 	 * @param  {type} opts description

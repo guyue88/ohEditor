@@ -24,6 +24,7 @@ export default function ajax(opts){
 		dataType: 'json',
 		jsonp: 'callback',
 		jsonpCallback: '',
+		processData: true,
 		success: function(data){},
 		error: function(data){},
 	}, opts);
@@ -35,7 +36,7 @@ export default function ajax(opts){
 		let data = jsonParse(opts.data);
 		let type = opts.type.toLowerCase();
 		let sendData = null;
-		let dataParam = param(data);;
+		let dataParam = opts.processData ? param(data) : data;
 
 		if(!opts.url) {
 			opts.error && opts.error('No url!');
@@ -80,20 +81,16 @@ export default function ajax(opts){
 			JSONP.src = url;
 			document.getElementsByTagName("head")[0].appendChild(JSONP);
 			return;
-
 		} else if (type === 'get') {
 			if(dataParam){
 				url += url.indexOf('?') == -1 ? '?' : '&';
 				url += dataParam;
 			}
 			XMLHttpReq.open(type, url, opts.async);
-
 		} else {
-
 			XMLHttpReq.open(type, url, opts.async);
-			XMLHttpReq.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			opts.contentType && XMLHttpReq.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 			sendData = dataParam;
-
 		}
 
 		XMLHttpReq.send(sendData);
@@ -118,8 +115,7 @@ export default function ajax(opts){
 					}
 					opts.success && opts.success(result);
 					resolve(result);
-					return false;
-				}else{
+				} else {
 					opts.error && opts.error();
 					reject();
 				}

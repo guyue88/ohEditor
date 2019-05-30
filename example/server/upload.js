@@ -1,11 +1,16 @@
 const express = require('express');
 const app = express();
 const path = require('path');
+const fs = require('fs');
 const multer = require('multer');
 const upload = multer({
 	storage: multer.diskStorage({
 		destination: function (req, file, cb) {
-			cb(null, path.resolve(__dirname, 'files/uploads'));
+			const dest = path.resolve(__dirname, 'files/uploads');
+			if (!fs.existsSync(dest)) {
+				fs.mkdirSync(dest, {recursive: true});
+			}
+			cb(null, dest);
 		},
 		filename: function (req, file, cb) {
 			cb(null,  Date.now() + '.' + file.mimetype.split('/').reverse()[0] );
@@ -29,9 +34,9 @@ app.all('*', function(req, res, next) {
 	}
 });
 
-app.post("/upload", upload.single('file'), function(req, res, next) {
+app.post("/upload", upload.single('image'), function(req, res, next) {
 	res.send({
-		'path': '/uploads/' + req.file.filename
+		path: `http://localhost:9090/uploads/${req.file.filename}`
 	});
 });
 
