@@ -1,5 +1,3 @@
-import $ from '../util/dom-core';
-
 class Selection{
 	constructor(){
 		this.selection = void 0;
@@ -28,14 +26,23 @@ class Selection{
 	 * @return {type}                description
 	 */
 	resetRange(startContainer, startOffset, endContainer, endOffset) {
-		let selection = this.getSelection();
+		const selection = this.getSelection();
 		selection.removeAllRanges();
 
-		let range = document.createRange();
+		const range = document.createRange();
 		range.setStart(startContainer, startOffset);
 		range.setEnd(endContainer, endOffset);
 		selection.addRange(range);
 		this.selection = selection;
+	}
+
+	setRangeEndOfElement(elem) {
+		const selection = this.getSelection();
+		const range = document.createRange();
+		range.selectNodeContents(elem);
+		range.collapse(false);
+		selection.removeAllRanges();
+		selection.addRange(range);
 	}
 }
 

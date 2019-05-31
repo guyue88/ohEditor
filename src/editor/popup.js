@@ -202,7 +202,7 @@ export class Popup{
 	}
 
 	/**
-	 * _renderLayerButton - 生成一个操作弹层内的按钮元素
+	 * 生成一个操作弹层内的按钮元素
 	 *
 	 * @private
 	 * @return {string}  DOM string
@@ -232,7 +232,7 @@ export class Popup{
 	}
 
 	/**
-	 * _addToggleTabEvent - 操作弹层内的tab切换
+	 * 操作弹层内的tab切换
 	 *
 	 * @private
 	 * @return {type}      description
@@ -256,12 +256,12 @@ export class Popup{
 	}
 
 	/**
-	 * _addToggleLayerEvent - 弹层的关闭与显示控制
+	 * 点击菜单按钮显示弹层，点击其他地方关闭弹层
 	 *
 	 * @private
 	 * @return {type}      description
 	 */
-	_addToggleLayerEvent($btn){
+	_addToggleLayerEvent(){
 		const self = this;
 		const $layer = this._editor.$toolbar.find('.oh-layer');
 

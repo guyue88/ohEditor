@@ -39,16 +39,5 @@ export default class FontFamily extends Plugin{
 			}
 		};
 		super(_opts, editor);
-		this.resetCmd();
-	}
-
-
-	/**
-	 * resetCmd - 重置fontFamily命令
-	 *
-	 * @return {type}  description
-	 */
-	resetCmd(){
-
 	}
 }

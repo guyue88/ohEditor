@@ -178,6 +178,10 @@ class VE {
 		return $(elem.children);
 	}
 
+	lastChildren() {
+		return this.children().last();
+	}
+
 	on(type, selector, fn, options = {}){
 		/*没有传selector， 则不用代理*/
 		if(!fn){
@@ -208,7 +212,7 @@ class VE {
 				if (!selector) {
 					/*无代理*/
 					elem.addEventListener(type, function(e) {
-						let res = fn.call(this, e);
+						let res = fn.call(this, e, this);
 						if(res === false){
 							e.preventDefault;
 							e.returnValue = false;
@@ -226,7 +230,7 @@ class VE {
 							/*判断是否匹配到我们所需要的元素上*/
 							if (target.matches(selector)) {
 								/*执行绑定的函数*/
-								let res = fn.call(target, e);
+								let res = fn.call(target, e, this);
 
 								if(res === false){
 									e.preventDefault;
@@ -356,6 +360,29 @@ class VE {
 		if ( typeof selector === "string" ) {
 			return [].indexOf.call( $(selector), this[ 0 ] );
 		}
+	}
+
+	hasClass(className) {
+		className = className.trim();
+		if (!className) return false;
+		const elem = this.get(0);
+		const classList = (elem.className ? elem.className.split(/\s/) : [])
+			.filter(item => {
+				return !!item.trim();
+			});
+		return classList.includes(className);
+	}
+
+	toggleClass(className) {
+		if (!className) return this;
+		return this.each(elem => {
+			const $elem = $(elem);
+			if ($elem.hasClass(className)) {
+				$elem.removeClass(className);
+			} else {
+				$elem.addClass(className);
+			}
+		});
 	}
 
 	addClass(className) {
@@ -509,7 +536,7 @@ class VE {
 
 	/*获取 html*/
 	html(val) {
-		if(!val){
+		if(val === undefined){
 			const elem = this[0];
 			return elem.innerHTML;
 		}else{

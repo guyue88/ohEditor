@@ -44,6 +44,10 @@ class Button{
 		}
 	}
 
+	getMenuBtn(name) {
+		return this._editor.$toolbar.find('.oh-button-wrap').find(`.oh-btn-${name.trim()}`);
+	}
+
 	/**
 	 * _renderButton - 生成一个按钮元素
 	 *
@@ -52,7 +56,7 @@ class Button{
 	 */
 	_renderButton(btnOpts){
 		let $button = $(`
-			<button type="button" id="oh-btn-${btnOpts.id}" title="${btnOpts.title}" class="oh-menu">
+			<button type="button" id="oh-btn-${btnOpts.id}" class="oh-menu oh-btn-${btnOpts.name}" title="${btnOpts.title}">
 				<span class="fa fa-${btnOpts.icon}"></span>
 			</button>
 		`);

@@ -31,7 +31,7 @@ export default class OhEditor {
 				target: 'http://localhost:9090/upload',
 				uploadKey: 'image',
 				useBase64: true,
-				maxBase64Size: 20000,
+				maxBase64Size: 50000,
 			}
 		};
 
@@ -64,6 +64,7 @@ export default class OhEditor {
 		if (this._opts.useStyleWithCSS) {
 			this.Cmd.do('styleWithCSS', true);
 		}
+		this.Cmd.do('defaultParagraphSeparator', this._opts.allowDivTransToP ? 'p' : 'div');
 	}
 
 	/**
@@ -75,7 +76,10 @@ export default class OhEditor {
 		this.refresh();
 		this._bindCmd();
 		this._bindEvent();
-		// this.$container.get(0).focus();
+
+		/* 将光标移动到容器最后面 */
+		this.Selection.setRangeEndOfElement(this.$container.get(0));
+
 		this.isReady = true;
 		while (this._readyWatchList.length) {
 			const fn = this._readyWatchList.shift();
@@ -104,8 +108,18 @@ export default class OhEditor {
 	 *
 	 * @return {string}  编辑区源代码
 	 */
-	get html(){
+	get html() {
 		return this.$container && this.$container.html();
+	}
+
+	/**
+	 * 设置编辑器区域初始代码
+	 * 
+	 * @return {OhEditor} OhEditor实例
+	 */
+	set html(html) {
+		this.$container && this.$container.html(html);
+		return this;
 	}
 
 	/**
@@ -142,7 +156,7 @@ export default class OhEditor {
 	}
 
 	/**
-	 * _renderButton - 渲染按钮到控制栏，按用户定义的顺序
+	 * 渲染按钮到控制栏，按用户定义的顺序
 	 * 
 	 * @private
 	 * @return {OhEditor} OhEditor实例
@@ -157,7 +171,7 @@ export default class OhEditor {
 	}
 
 	/**
-	 * _renderPopup - 渲染弹层
+	 * 渲染弹层
 	 *
 	 * @private
 	 * @return {OhEditor}  description
@@ -176,9 +190,18 @@ export default class OhEditor {
 	 * @return {OhEditor} OhEditor实例
 	 */
 	_initFrame() {
-		this._createWrapDom();
-		this._createToolbarDom();
-		this._createContainerDom();
+		const wrap = this._createWrapDom();
+		const toolbar = this._createToolbarDom();
+		const container = this._createContainerDom();
+
+		this.$wrap = $(wrap);
+		this.$toolbar = $(toolbar);
+		this.$container = $(container);
+
+		this.$editor.html('');
+		this.$wrap.append(this.$toolbar);
+		this.$wrap.append(this.$container);
+		this.$editor.append(this.$wrap);
 		return this;
 	}
 
@@ -186,52 +209,41 @@ export default class OhEditor {
 	 * 创建wrap
 	 * 
 	 * @private
-	 * @return {OhEditor} OhEditor实例
+	 * @return {string} DOM string
 	 */
 	_createWrapDom() {
-		let $wrap = $(`<div id="oh-editor${this.id}" class="oh-wrap"></div>`);
-
-		this.$editor.append($wrap);
-		this.$wrap = $wrap;
-		return this;
+		return `<div id="oh-editor${this.id}" class="oh-wrap"></div>`;
 	}
 
 	/**
 	 * 创建toolbar
 	 * 
 	 * @private
-	 * @return {OhEditor} OhEditor实例
+	 * @return {string} DOM string
 	 */
 	_createToolbarDom() {
 		if (!this._opts.toolbar || !this._opts.toolbar.length) {
 			console.warn('没有定义 toolbar ，无法操作编辑器！');
-			return this;
+			return '';
 		}
-		let $toolbar = $('<div class="oh-toolbar"></div>');
-
-		this.$wrap.append($toolbar);
-		this.$toolbar = $toolbar;
-		return this;
+		return '<div class="oh-toolbar"></div>';
 	}
 
 	/**
 	 * 创建可视编辑区
 	 * 
 	 * @private
-	 * @return {OhEditor} OhEditor实例
+	 * @return {string} DOM string
 	 */
 	_createContainerDom() {
-		let $container = $(`
+		const initialContent = this.$editor.html();
+		return `
 			<div class="oh-container" contenteditable="true" style="width: ${this._opts.minWidth};height: ${this._opts.minHeight}">
 				${this._opts.allowDivTransToP ? "<p>" : "<div>"}
-					${this._opts.initialContent}
+					${initialContent.trim() || this._opts.initialContent}
 				${this._opts.allowDivTransToP ? "</p>" : "</div>"}
 			</div>
-		`);
-
-		this.$wrap.append($container);
-		this.$container = $container;
-		return this;
+		`;
 	}
 
 	/**

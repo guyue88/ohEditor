@@ -14,5 +14,16 @@ export default class Bold extends Plugin{
 			}
 		};
 		super(_opts, editor);
+		this.name = name;
+		this._initEvent();
+	}
+
+	_initEvent(){
+		this._editor.ready(() => {
+			const $btn = this._editor.Button.getMenuBtn(this.name);
+			$btn.on('click', (event, elem) => {
+				$(elem).toggleClass('oh-active');
+			});
+		});
 	}
 }
