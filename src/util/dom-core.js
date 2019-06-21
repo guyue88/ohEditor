@@ -1,3 +1,6 @@
+/* eslint-disable no-shadow */
+/* eslint-disable no-plusplus */
+/* eslint-disable no-empty */
 /* eslint-disable guard-for-in */
 import ajax from './ajax';
 
@@ -11,14 +14,12 @@ Element.prototype.matches =
   function (s) {
     const matches = (this.document || this.ownerDocument).querySelectorAll(s);
     let i = matches.length;
-    // eslint-disable-next-line no-empty
-    // eslint-disable-next-line no-plusplus
     while (--i >= 0 && matches.item(i) !== this) {}
     return i > -1;
   };
 
 /* 所有事件记录，便于解绑 */
-const allEvent = [];
+const _allEvent = [];
 
 /**
  * createElement - 通过创建div，并返回其子元素，创建dom
@@ -191,7 +192,7 @@ class VE {
     return this.children().last();
   }
 
-  on(type, selector, fn, options = {}) {
+  on(type, selector, fn, options) {
     /* 没有传selector， 则不用代理 */
     if (!fn) {
       fn = selector;
@@ -200,27 +201,20 @@ class VE {
 
     /* 可能有多个事件 */
     const types = type.split(/\s+/);
-    const opts = {
+    const opts = typeof options === 'object' ? {
       once: false,
       capture: false,
       passive: false,
       ...options,
-    };
+    } : options;
     return this.each(elem => {
       types.forEach(type => {
         type = type.trim();
         if (!type) return;
 
-        /* 记录事件 */
-        allEvent.push({
-          elem,
-          type,
-          fn,
-        });
-
         if (!selector) {
           /* 无代理 */
-          elem.addEventListener(type, function (e) {
+          const callback = function (e) {
             const res = fn.call(this, e, this);
             if (res === false) {
               e.preventDefault();
@@ -228,10 +222,21 @@ class VE {
               e.stopPropagation();
               e.cancelBubble = true;
             }
-          }, opts);
+          };
+          /* 记录事件 */
+          _allEvent.push({
+            type,
+            selector,
+            fn,
+            options,
+            elem,
+            callback,
+            opts,
+          });
+          elem.addEventListener(type, callback, opts);
         } else {
           /* 有代理 */
-          elem.addEventListener(type, function (e) {
+          const callback = function (e) {
             let { target } = e;
             const { currentTarget } = e;
             /* 遍历外层并且匹配 */
@@ -239,7 +244,7 @@ class VE {
               /* 判断是否匹配到我们所需要的元素上 */
               if (target.matches(selector)) {
                 /* 执行绑定的函数 */
-                const res = fn.call(target, e, this);
+                const res = fn.call(target, e, this, target);
 
                 if (res === false) {
                   e.preventDefault();
@@ -251,7 +256,18 @@ class VE {
               }
               target = target.parentNode;
             }
-          }, opts);
+          };
+          /* 记录事件 */
+          _allEvent.push({
+            type,
+            selector,
+            fn,
+            options,
+            elem,
+            callback,
+            opts,
+          });
+          elem.addEventListener(type, callback, opts);
         }
       });
     });
@@ -261,8 +277,31 @@ class VE {
     return this.on(type, selector, fn, { once: true });
   }
 
-  off() {
-
+  off(type, selector, fn, options) {
+    if (!fn) {
+      fn = selector;
+      selector = null;
+    }
+    return this.each(elem => {
+      const events = _allEvent.filter(event => {
+        let eqSel = true;
+        if (selector && selector !== event.selector) {
+          eqSel = false;
+        }
+        let eqOpts = true;
+        if (options && options !== event.options) {
+          eqOpts = false;
+        }
+        return elem === event.elem
+          && type === event.type
+          && fn === event.fn
+          && eqSel
+          && eqOpts;
+      });
+      events.forEach(event => {
+        event.elem.removeEventListener(event.type, event.callback, event.opts);
+      });
+    });
   }
 
   siblings(selector) {
