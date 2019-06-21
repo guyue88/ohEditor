@@ -26,11 +26,16 @@ export default class Image extends Plugin{
 							<input type="file" accept="image/jpeg, image/jpg, image/png, image/gif, image/svg+xml" tabindex="-1" class="oh-upload-image">
 						</div>
 					`
-				},{
+				}, {
 					name: 'link',
 					icon: 'link',
 					title: '插入图片链接',
-					template: `<div>插入链接</div>`
+					template: `<div class="oh-insert-input">
+						<input type="url" tabindex="-1" class="oh-image-link" placeholder="https://"/>
+					</div>
+					<div class="oh-insert-image">
+						<button type="button" class="oh-insert-button">插入</button>
+					</div>`
 				}]
 			}
 		};
@@ -52,7 +57,9 @@ export default class Image extends Plugin{
 	_initCommand(){
 		this._editor.ready(() => {
 			const $layer = this._editor.Popup.getPopupLayer(this.name),
-				$image = $layer.find('.oh-upload-image');
+				$image = $layer.find('.oh-upload-image'),
+				$imageInsertButton = $layer.find('.oh-insert-button'),
+				$imageInsertInput = $layer.find('.oh-image-link');
 
 			const { config } = this;
 			$image.on('change', () => {
@@ -66,7 +73,14 @@ export default class Image extends Plugin{
 				} else {
 					throw new Error('无法处理该图片，请设置图片上传路径~~');
 				}
-				
+			});
+			// const range = this._editor.Selection.getRange();
+			$imageInsertButton.on('click', () => {
+				const link = $imageInsertInput.val();
+				$layer.hide();
+				//TODO 编辑区失去焦点会使得选区丢失从而无法插入图片，待修复
+				// this._editor.Selection.restoreRange(range);
+				this._editor.Cmd.do('insertHTML', `<img src='${link}' width='100%' />`);
 			});
 		});
 	}
@@ -76,12 +90,10 @@ export default class Image extends Plugin{
 		const { name } = file;
 		$(reader).once('load', () => {
 			$layer.hide();
-			this._editor.Cmd.do('insertHTML', `<img src='${reader.result}' width='300px' title='${name}' alt='${name}'>`);
+			this._editor.Cmd.do('insertHTML', `<img src='${reader.result}' width='100%' title='${name}' alt='${name}' />`);
 		});
 
-		if (file) {
-			reader.readAsDataURL(file);
-		}
+		reader.readAsDataURL(file);
 	}
 
 	_uploadImage(file, $layer) {
@@ -98,7 +110,7 @@ export default class Image extends Plugin{
 		}).then(res => {
 			const path = res.path || res;
 			$layer.hide();
-			this._editor.Cmd.do('insertHTML', `<img src='${path}' width='300px' title='${name}' alt='${name}'>`);
+			this._editor.Cmd.do('insertHTML', `<img src='${path}' width='100%' title='${name}' alt='${name}' />`);
 		}, () => {
 			console.warn('上传错误');
 		});

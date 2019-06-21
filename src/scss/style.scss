@@ -145,7 +145,6 @@
 				border-left: 5px solid transparent;
 				border-right: 5px solid transparent;
 				border-bottom: 5px solid #222;
-				vertical-align: middle;
 			}
 
 			.oh-popup-tab{
@@ -216,7 +215,49 @@
 					}
 				}
 			}
-
+			.oh-popup-child-link {
+				.oh-insert-input {
+					margin-top: 10px;
+					input.oh-image-link {
+						width: 100%;
+						box-sizing: border-box;
+						padding: 6px;
+						font-size: 14px;
+						line-height: 21px;
+					}
+				}
+				.oh-insert-image {
+					margin-top: 10px;
+					text-align: right;
+					.oh-insert-button {
+						height: 36px;
+						line-height: 1;
+						color: #1e88e5;
+						padding: 10px;
+						cursor: pointer;
+						text-decoration: none;
+						border: none;
+						background: none;
+						font-size: 16px;
+						outline: none;
+						-webkit-transition: background 0.2s ease 0s;
+						-moz-transition: background 0.2s ease 0s;
+						-ms-transition: background 0.2s ease 0s;
+						-o-transition: background 0.2s ease 0s;
+						transition: background 0.2s ease 0s;
+						border-radius: 2px;
+						-moz-border-radius: 2px;
+						-webkit-border-radius: 2px;
+						-moz-background-clip: padding;
+						-webkit-background-clip: padding-box;
+						background-clip: padding-box;
+						&:hover{
+							background: #ebebeb;
+    					color: #1e88e5;
+						}
+					}
+				}
+			}
 		}
 
 		.oh-drop-layer{

@@ -270,18 +270,18 @@ export default class OhEditor {
 	 * @private
 	 * @return {type}  description
 	 */
-	_bindEvent(){
+	_bindEvent() {
 		const self = this,
 			blockElem = this._opts.allowDivTransToP ? '<p><br/></p>' : '<div><br/></div>';
 
-		if(this._opts.allowDivTransToP){
+		if (this._opts.allowDivTransToP) {
 			let timer = void 0;
-			this.$container.on('keyup', function(e){
-				if(timer) clearTimeout(timer);
-				timer = setTimeout(function(){
+			this.$container.on('keyup', function(e) {
+				if (timer) clearTimeout(timer);
+				timer = setTimeout(function() {
 					/*删除，全部内容删除后需要填充一个空的p*/
-					if(e.keyCode === 8){
-						if(!self.html()){
+					if (e.keyCode === 8) {
+						if (!self.html) {
 							self.$container.prepend(blockElem);
 						}
 					}

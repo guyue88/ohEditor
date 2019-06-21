@@ -44,6 +44,13 @@ class Selection{
 		selection.removeAllRanges();
 		selection.addRange(range);
 	}
+
+	restoreRange(range) {
+		const selection = this.getSelection();
+		selection.removeAllRanges();
+		selection.addRange(range);
+		this.selection = selection;
+	}
 }
 
 export { Selection };
