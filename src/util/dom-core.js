@@ -2,8 +2,7 @@
 /* eslint-disable no-plusplus */
 /* eslint-disable no-empty */
 /* eslint-disable guard-for-in */
-import ajax from './ajax';
-
+/* https://github.com/AspenLuoQiang/ohEditor/blob/master/src/util/dom-core.js */
 Element.prototype.matches =
   Element.prototype.matches ||
   Element.prototype.matchesSelector ||
@@ -32,7 +31,6 @@ function createElement(html) {
   div.innerHTML = html;
   return div.children;
 }
-
 
 /**
  * querySelectorAll - 封装querySelectorAll，并返回数组DOMList
@@ -69,7 +67,7 @@ function isDOMList(list) {
   return false;
 }
 
-class VE {
+export class VE {
   constructor(selector, scope) {
     if (!selector) return;
 
@@ -192,7 +190,7 @@ class VE {
     return this.children().last();
   }
 
-  on(type, selector, fn, options) {
+  on(type, selector, fn, options = false) {
     /* 没有传selector， 则不用代理 */
     if (!fn) {
       fn = selector;
@@ -200,7 +198,7 @@ class VE {
     }
 
     /* 可能有多个事件 */
-    const types = type.split(/\s+/);
+    const types = type.split(/[\s+,]/);
     const opts = typeof options === 'object' ? {
       once: false,
       capture: false,
@@ -270,6 +268,82 @@ class VE {
           elem.addEventListener(type, callback, opts);
         }
       });
+    });
+  }
+
+  onLongPress(selector, fn, options = false) {
+    /* 没有传selector， 则不用代理 */
+    if (!fn) {
+      fn = selector;
+      selector = null;
+    }
+
+    const opts = typeof options === 'object' ? {
+      once: false,
+      capture: false,
+      passive: false,
+      ...options,
+    } : options;
+
+    return this.each(elem => {
+      let callback;
+      if (!selector) {
+        /* 无代理 */
+        callback = function (e) {
+          const res = fn.call(this, e, this);
+          if (res === false) {
+            e.preventDefault();
+            e.returnValue = false;
+            e.stopPropagation();
+            e.cancelBubble = true;
+          }
+        };
+      } else {
+        /* 有代理 */
+        callback = function (e) {
+          let { target } = e;
+          const { currentTarget } = e;
+          /* 遍历外层并且匹配 */
+          while (target !== currentTarget) {
+            /* 判断是否匹配到我们所需要的元素上 */
+            if (target.matches && target.matches(selector)) {
+              /* 执行绑定的函数 */
+              const res = fn.call(target, e, this, target);
+
+              if (res === false) {
+                e.preventDefault();
+                e.returnValue = false;
+                e.stopPropagation();
+                e.cancelBubble = true;
+              }
+              break;
+            }
+            target = target.parentNode;
+          }
+        };
+      }
+
+      const time = options.time || 800;
+      let timer = null;
+      elem.addEventListener('touchstart', function (e) {
+        // eslint-disable-next-line no-console
+        // console.log('touchstart', +new Date());
+        timer = setTimeout(() => {
+          callback.call(this, e);
+        }, time);
+      }, opts);
+      document.body.addEventListener('touchmove', () => {
+        // eslint-disable-next-line no-console
+        // console.log('touchmove', +new Date());
+        clearTimeout(timer);
+        timer = null;
+      }, false);
+      elem.addEventListener('touchend', () => {
+        // eslint-disable-next-line no-console
+        // console.log('touchend', +new Date());
+        clearTimeout(timer);
+        timer = null;
+      }, opts);
     });
   }
 
@@ -409,10 +483,11 @@ class VE {
     }
   }
 
-  hasClass(className) {
+  hasClass(className = '') {
     className = className.trim();
     if (!className) return false;
     const elem = this.get(0);
+    if (!elem) return false;
     const classList = (elem.className ? elem.className.split(/\s/) : [])
       .filter(item => {
         return !!item.trim();
@@ -436,16 +511,20 @@ class VE {
     if (!className) return this;
 
     return this.each(elem => {
-      let arr;
       if (elem.className) {
-        arr = elem.className.split(/\s/);
-        arr = arr.filter(item => {
+        const arr = elem.className.split(/\s/).filter(item => {
+          return !!item.trim();
+        });
+        const newCls = className.split(/\s/).filter(item => {
           return !!item.trim();
         });
 
-        if (arr.indexOf(className) < 0) {
-          arr.push(className);
-        }
+        newCls.forEach(cls => {
+          cls = cls.trim();
+          if (cls && arr.indexOf(cls) < 0) {
+            arr.push(cls);
+          }
+        });
 
         elem.className = arr.join(' ');
       } else {
@@ -459,13 +538,15 @@ class VE {
     if (!className) return this;
 
     return this.each(elem => {
-      let arr;
       if (elem.className) {
-        arr = elem.className.split(/\s/);
+        let arr = elem.className.split(/\s/);
+        const delCls = className.split(/\s/).filter(item => {
+          return !!item.trim();
+        });
         arr = arr.filter(item => {
           item = item.trim();
 
-          if (!item || item === className) {
+          if (!item || delCls.includes(item)) {
             return false;
           }
           return true;
@@ -485,7 +566,7 @@ class VE {
           elem.style[styleName] = key[name];
         }
       });
-    } else if (!val === undefined) {
+    } else if (val === undefined) {
       const styleName = formatStyleName(key);
       const elem = this.get(0);
       if (elem) {
@@ -615,11 +696,21 @@ class VE {
   }
 
   width() {
-    return parseFloat(this.eq(0).css('width'));
+    const elem = this.get(0);
+    if (elem) {
+      return elem.offsetWidth;
+    }
+    return NaN;
+    // return parseFloat(this.eq(0).css('width'));
   }
 
   height() {
-    return parseFloat(this.eq(0).css('height'));
+    const elem = this.get(0);
+    if (elem) {
+      return elem.offsetHeight;
+    }
+    return NaN;
+    // return parseFloat(this.eq(0).css('height'));
   }
 
   offset() {
@@ -674,16 +765,14 @@ function sibling(first, elem) {
   return matched;
 }
 
-function $(selector) {
-  return new VE(selector);
+function $(selector, scope) {
+  return new VE(selector, scope);
 }
 
 $.inArray = function (value, array) {
   if (!value || !array || !Array.isArray(array)) return -1;
   return array.indexOf(value);
 };
-
-$.ajax = ajax;
 
 !window.$ && (window.$ = $);
 
