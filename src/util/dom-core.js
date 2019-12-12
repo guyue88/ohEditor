@@ -126,7 +126,7 @@ export class VE {
 
   is(selector) {
     const elem = this.get(0);
-    return elem && elem.matches(selector);
+    return elem && elem.matches && elem.matches(selector);
   }
 
   each(fn) {
@@ -390,7 +390,7 @@ export class VE {
   next(selector) {
     let result = [];
     this.each(elem => {
-      result = result.concat(elem.nextSibling);
+      result = result.concat(elem.nextElementSibling);
     });
 
     return $(result).filter(selector);
@@ -399,7 +399,7 @@ export class VE {
   prev(selector) {
     let result = [];
     this.each(elem => {
-      result = result.concat(elem.previousSibling);
+      result = result.concat(elem.previousElementSibling);
     });
 
     return $(result).filter(selector);
@@ -408,7 +408,7 @@ export class VE {
   nextAll(selector) {
     let result = [];
     this.each(elem => {
-      result = result.concat(dir(elem, 'nextSibling'));
+      result = result.concat(dir(elem, 'nextElementSibling'));
     });
 
     return $(result).filter(selector);
@@ -417,7 +417,7 @@ export class VE {
   prevAll(selector) {
     let result = [];
     this.each(elem => {
-      result = result.concat(dir(elem, 'previousSibling'));
+      result = result.concat(dir(elem, 'previousElementSibling'));
     });
 
     return $(result).filter(selector);
@@ -465,7 +465,7 @@ export class VE {
       });
     } else if (typeof selector === 'string') {
       this.each(elem => {
-        elem.matches(selector) && result.push(elem);
+        elem.matches && elem.matches(selector) && result.push(elem);
       });
     }
     return $(result);
@@ -592,6 +592,7 @@ export class VE {
     return this.css('display', 'none');
   }
 
+  /* 元素内部最前面添加一个节点 */
   prepend($children) {
     $children = $($children);
     return this.each(target => {
@@ -611,14 +612,16 @@ export class VE {
     });
   }
 
+  /* 元素后面添加一个节点 */
   after($ele) {
     const ele = $($ele)[0];
     if (!ele) return;
     return this.each(target => {
-      target.parentNode.insertBefore(ele, target.nextSibling);
+      target.parentNode.insertBefore(ele, target.nextElementSibling);
     });
   }
 
+  /* 元素前面添加一个节点 */
   before($ele) {
     const ele = $($ele)[0];
     if (!ele) return;
@@ -756,7 +759,7 @@ function dir(elem, direction, until) {
 function sibling(first, elem) {
   const matched = [];
 
-  for (; first; first = first.nextSibling) {
+  for (; first; first = first.nextElementSibling) {
     if (first.nodeType === 1 && first !== elem) {
       matched.push(first);
     }
